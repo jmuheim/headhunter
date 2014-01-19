@@ -26,6 +26,10 @@ Just set the environment variable `HEADHUNTER` to `true` when running your tests
 
 Headhunter doesn't keep your tests from passing if invalid HTML or unused CSS is found. Instead it displays a short statistic after the tests are run.
 
+    $ rake HEADHUNTER=true
+
+    Precompiling assets for Headhunter... done!
+
     30/30 |============================= 100 ==============================>| Time: 00:00:02
 
     Finished in 2.65 seconds
@@ -47,11 +51,9 @@ Headhunter doesn't keep your tests from passing if invalid HTML or unused CSS is
 
 ## How it works
 
-Headhunter registers itself as middleware in the Rack stack and triggers validation for every HTML response.
+Headhunter registers itself as middleware in the Rack stack and triggers validation for every HTML response. Headhunter also iterates over every `.css` file and triggers its validation. In addition, it checks which CSS selectors are really used in the HTML pages to see whether there exist any unused CSS definitions.
 
-For every `.css` file, validation is also triggered. In addition, it iterates over every HTML page's selectors to see whether there exist any unused CSS definitions in your `.css` files.
-
-For being able to validate CSS, `rake assets:precompile` is triggered at the beginning of running tests. This may slow down starting your tests a bit. (Notice: after the tests have finished, the precompiled assets are also removed automatically by running `rake assets:clobber`.)
+For being able to validate CSS, `rake assets:precompile` is triggered at the beginning of running tests. This may slow down starting your tests a bit. **Notice: all precompiled assets will be removed after the tests have finished!**
 
 ## Requirements
 
@@ -74,6 +76,7 @@ You need a working internet connection to run CSS validation. As a Rails applica
 - HTML and CSS sources should not be compressed, to allow more concise error messages
 - Would be really useful to have the concrete URL of every validated HTML page. But can't find a way to extract it from Rack response.
 - There are not tests yet. I first want to see whether this gem would be appreciated by the community, and if so, I will definitely add tests.
+- Didn't try this with AJAX requests yet. Would be great if such responses would be validated, too!
 
 ## Disclaimer
 
