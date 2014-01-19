@@ -55,17 +55,13 @@ Headhunter registers itself as middleware in the Rack stack and triggers validat
 
 For being able to validate CSS, `rake assets:precompile` is triggered at the beginning of running tests. This may slow down starting your tests a bit. **Notice: all precompiled assets will be removed after the tests have finished!**
 
+**Please keep in mind that this is a pretty early release. I didn't have the possibility to test it extensively yet, so there surely are a lot of things left to do. You are highly welcome to file issues, add feature requests and open pull requests.**
+
 ## Requirements
 
-### Tidy HTML
+**[Tidy HTML](http://tidy.sourceforge.net/)** should be installed on a typical OSX and Linux installation already. You're not developing on a Windows machine, are you?! If you want to validate HTML5 (and you should want to!), install the HTML5 version like described here: [homebrew tidy html5](http://techblog.willshouse.com/2013/10/21/homebrew-tidy-html5/).
 
-[Tidy HTML](http://tidy.sourceforge.net/) should be installed on a typical OSX and Linux installation already. You're not developing on a Windows machine, are you?!
-
-If you want to validate HTML5 (and you should want to!), install the HTML5 version like described here: [homebrew tidy html5](http://techblog.willshouse.com/2013/10/21/homebrew-tidy-html5/).
-
-### Working internet connection
-
-You need a working internet connection to run CSS validation. As a Rails application typically contains one single CSS file (`application.css`), this won't have much impact on the speed of your tests.
+You need a **working internet connection** to run CSS validation. As a Rails application typically contains one single CSS file (`application.css`), this won't have much impact on the speed of your tests.
 
 ## Known issues and future plans
 
@@ -84,4 +80,4 @@ Headhunter is heavily inspired by Aanand Prasad's (outdated) [Deadweight](https:
 
 **USE THIS GEM AT YOUR OWN RISK!**
 
-All provided functionality is provided "as is". You are highly welcome to file issues, feature requests and pull requests.
+All provided functionality is provided "as is".
