@@ -26,7 +26,7 @@ Headhunter doesn't keep your tests from passing if invalid HTML or unused CSS is
 
     Validated 1 stylesheets.
     1 stylesheet is invalid.
-      public/assets/application-d205d6f344d8623ca0323cb6f6bd7ca1.css:
+      application.css:
       - Invalid css: line 1: Property bla doesn't exist
 
     Found 23 CSS selectors.

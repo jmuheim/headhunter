@@ -35,8 +35,10 @@ class Headhunter
 
     private
 
+    # Converts a path like public/assets/application-d205d6f344d8623ca0323cb6f6bd7ca1.css to application.css
     def extract_filename(path)
-      binding.pry
+      matches = path.match /^public\/assets\/(.*)-([a-z0-9]*)(\.css)/
+      matches[1] + matches[3]
     end
 
     def x_stylesheets_be(size)
