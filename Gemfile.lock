@@ -1,47 +1,48 @@
 PATH
   remote: .
   specs:
-    headhunter (0.2.1)
+    headhunter (0.0.1)
+      colorize
       css_parser (~> 1.2.6)
+      html_validation
       nokogiri
+      rspec
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
-    addressable (2.3.2)
+    addressable (2.3.5)
+    colorize (0.6.0)
     css_parser (1.2.6)
       addressable
       rdoc
-    domain_name (0.5.3)
-      unf (~> 0.0.3)
-    json (1.7.5)
-    mechanize (2.5.1)
-      domain_name (~> 0.5, >= 0.5.1)
-      mime-types (~> 1.17, >= 1.17.2)
-      net-http-digest_auth (~> 1.1, >= 1.1.1)
-      net-http-persistent (~> 2.5, >= 2.5.2)
-      nokogiri (~> 1.4)
-      ntlm-http (~> 0.1, >= 0.1.1)
-      webrobots (~> 0.0, >= 0.0.9)
-    mime-types (1.19)
-    net-http-digest_auth (1.2.1)
-    net-http-persistent (2.7)
-    nokogiri (1.4.4)
-    ntlm-http (0.1.1)
-    rake (0.9.2)
-    rdoc (3.12)
+    diff-lcs (1.2.5)
+    fuubar (1.3.2)
+      rspec (>= 2.14.0, < 3.1.0)
+      ruby-progressbar (~> 1.3)
+    html_validation (1.0.0)
+    json (1.8.1)
+    mini_portile (0.5.2)
+    nokogiri (1.6.1)
+      mini_portile (~> 0.5.0)
+    rake (10.1.1)
+    rdoc (4.1.1)
       json (~> 1.4)
-    shoulda (2.11.3)
-    unf (0.0.5)
-      unf_ext
-    unf_ext (0.0.5)
-    webrobots (0.0.13)
+    rspec (2.14.1)
+      rspec-core (~> 2.14.0)
+      rspec-expectations (~> 2.14.0)
+      rspec-mocks (~> 2.14.0)
+    rspec-core (2.14.7)
+    rspec-expectations (2.14.4)
+      diff-lcs (>= 1.1.3, < 2.0)
+    rspec-mocks (2.14.4)
+    ruby-progressbar (1.4.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  fuubar
   headhunter!
-  mechanize (~> 2.5.1)
   rake
-  shoulda
+  rspec (>= 2.0)
