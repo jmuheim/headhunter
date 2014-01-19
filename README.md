@@ -1,5 +1,9 @@
 # Headhunter
 
+[![Gem Version](https://badge.fury.io/rb/headhunter.png)](http://badge.fury.io/rb/headhunter)
+[![Code Climate](https://codeclimate.com/github/jmuheim/headhunter.png)](https://codeclimate.com/github/jmuheim/headhunter)
+[![Travis CI](https://api.travis-ci.org/jmuheim/headhunter.png)](https://travis-ci.org/jmuheim/headhunter)
+
 Headhunter is an HTML and CSS validation tool that injects itself into your Rails feature tests and automagically checks all your generated HTML and CSS for validity.
 
 In addition, it also looks out for unused (and therefore superfluous) CSS selectors.
@@ -69,6 +73,7 @@ You need a working internet connection to run CSS validation. As a Rails applica
 - Instead of using the online CSS validation service of ???, it would be nice to have a local CSS validator. Is there anything like this? TotalValidator seems to be able to do something like this, but it's not free for CSS validation and I don't know how to use it.
 - HTML and CSS sources should not be compressed, to allow more concise error messages
 - Would be really useful to have the concrete URL of every validated HTML page. But can't find a way to extract it from Rack response.
+- There are not tests yet. I first want to see whether this gem would be appreciated by the community, and if so, I will definitely add tests.
 
 ## Disclaimer
 
