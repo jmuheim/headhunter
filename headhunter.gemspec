@@ -9,13 +9,7 @@ Gem::Specification.new do |s|
   s.summary  = 'An automatic HTML validator hooks into your request/acceptance/feature test suite and validates your HTML after every request'
   s.license  = 'MIT'
 
+  s.add_dependency 'html_validation'
   s.add_dependency 'colorize'
-
-  s.add_development_dependency 'shoulda'
-  s.add_development_dependency 'rake'
-
-  s.files        = `git ls-files LICENSE README.md bin lib vendor`.split
-  s.require_path = 'lib'
-  s.executables  = Dir.glob('bin/*').map(&File.method(:basename))
 end
 
