@@ -1,8 +1,12 @@
 # encoding: utf-8
 
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'headhunter/version'
+
 Gem::Specification.new do |s|
   s.name        = 'headhunter'
-  s.version     = '0.0.2'
+  s.version     = Headhunter::VERSION
   s.authors     = ['Joshua Muheim']
   s.email       = 'josh@muheimwebdesign.ch'
   s.homepage    = 'http://github.com/jmuheim/headhunter'
@@ -17,8 +21,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency('rspec')
   s.add_development_dependency('fuubar')
+  s.add_development_dependency('gem-release')
   s.add_development_dependency('rake')
   s.add_development_dependency('rspec', '>= 2.0')
 
-  s.files = Dir.glob('lib/**/**')
+  s.files = Dir['{lib/**/*,[A-Z]*}']
 end
