@@ -6,7 +6,7 @@ class Headhunter
     def initialize(stylesheets)
       @profile = 'css3' # TODO: Option for profile css1 and css21
       @stylesheets = stylesheets
-      @messages = []
+      @messages_per_stylesheet = {}
     end
 
     def process!
@@ -16,19 +16,21 @@ class Headhunter
 
         response = get_validation_response({text: css, profile: @profile, vextwarning: 'true'})
         unless response_indicates_valid?(response)
-          process_errors(stylesheet, response)
+          process_errors(stylesheet, css, response)
         end
       end
     end
 
     def report
       log.puts "Validated #{@stylesheets.size} stylesheets.".yellow
-      log.puts "#{x_stylesheets_be(@stylesheets.size - @messages.size)} valid.".green if @messages.size < @stylesheets.size
-      log.puts "#{x_stylesheets_be(@messages.size)} invalid:".red if @messages.size > 0
-      @messages.each do |message|
-        log.puts "- #{message}".red
+      log.puts "#{x_stylesheets_be(@stylesheets.size - @messages_per_stylesheet.size)} valid.".green if @messages_per_stylesheet.size < @stylesheets.size
+      log.puts "#{x_stylesheets_be(@messages_per_stylesheet.size)} invalid.".red if @messages_per_stylesheet.size > 0
+
+      @messages_per_stylesheet.each_pair do |stylesheet, messages|
+        log.puts "  #{stylesheet}:".red
+
+        messages.each { |message| log.puts "  - #{message}".red }
       end
-      log.puts
     end
 
     private
@@ -41,12 +43,11 @@ class Headhunter
       end
     end
 
-    def process_errors(fragment, response)
-      lines = fragment.split($/)
+    def process_errors(file, css, response)
+      @messages_per_stylesheet[file] = []
 
-      # lines.each_with_index{|line, index| @messages << "#{'%04i' % (index+1)} : #{line}#{$/}"}
       REXML::Document.new(response.body).root.each_element('//m:error') do |e|
-        @messages << "#{error_line_prefix}: line #{e.elements['m:line'].text}: #{e.elements['m:message'].get_text.value.strip}\n"
+        @messages_per_stylesheet[file] << "#{error_line_prefix}: line #{e.elements['m:line'].text}: #{e.elements['m:message'].get_text.value.strip}\n"
       end
     end
 
