@@ -1,7 +1,7 @@
 require 'net/http'
 require 'rexml/document'
 
-class Headhunter
+module Headhunter
   class CssValidator
     def initialize(stylesheets)
       @profile = 'css3' # TODO: Option for profile css1 and css21
@@ -58,8 +58,6 @@ class Headhunter
     end
 
     def fetch(path) # TODO: Move to Headhunter!
-      log.puts(path)
-
       loc = path
 
       begin

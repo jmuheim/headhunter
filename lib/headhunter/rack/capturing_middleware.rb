@@ -1,4 +1,4 @@
-class Headhunter
+module Headhunter
   module Rack
     class CapturingMiddleware
       def initialize(app, headhunter)

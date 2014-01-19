@@ -2,7 +2,7 @@ require 'css_parser'
 require 'nokogiri'
 require 'open-uri'
 
-class Headhunter
+module Headhunter
   class CssHunter
     def initialize(stylesheets)
       @stylesheets      = stylesheets
@@ -52,8 +52,6 @@ class Headhunter
     end
 
     def fetch(path)
-      log.puts(path)
-
       loc = path
 
       begin

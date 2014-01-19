@@ -1,6 +1,6 @@
 require 'html_validation'
 
-class Headhunter
+module Headhunter
   class HtmlValidator
     def initialize
       @valid_results   = []
