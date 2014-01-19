@@ -7,14 +7,10 @@ class Headhunter
       initializer "headhunter.hijack" do |app|
         root = ::Rails.root
 
-        hh = Headhunter.new
+        head_hunter = Headhunter.new
+        at_exit { head_hunter.report }
 
-        at_exit do
-          hh.prepare_results_html
-          hh.report
-        end
-
-        app.middleware.insert(0, Headhunter::Rack::CapturingMiddleware, hh)
+        app.middleware.insert(0, Headhunter::Rack::CapturingMiddleware, head_hunter)
       end
     end
   end
