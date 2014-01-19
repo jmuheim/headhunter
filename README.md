@@ -46,16 +46,19 @@ If you want to validate HTML5 (and you should want to!), install the HTML5 versi
 
 ### Working internet connection
 
-You need a working internet connection to run CSS validation.
+You need a working internet connection to run CSS validation. As a Rails application typically contains one single CSS file (`application.css`), this won't have much impact on the speed of your tests.
 
-## Known issues and plans
+## Known issues and future plans
 
 - It would be nice to use Rails' own assets compilation that's executed when the first JavaScript test is run. Anyone has an idea on how to do this?
 - At the moment, in addition to precompiling and removing your assets, `rake assets:clobber` is run also **before** precompiling! The issue is explained here: [Rake assets are generated twice when precompiling them once from command line and once from within a Ruby script](http://stackoverflow.com/questions/20938891/rake-assets-are-generated-twice-when-precompiling-them-once-from-command-line-an)
 - Instead of running `rake assets:clobber`, it may be also sufficient to simply remove all *.css files from `public/assets/stylesheets` manually. This would save some compilation time.
+- Instead of using the online CSS validation service of ???, it would be nice to have a local CSS validator. Is there anything like this? TotalValidator seems to be able to do something like this, but it's not free for CSS validation and I don't know how to use it.
 
 ## Disclaimer
 
-Headhunter is heavily inspired by Aanand Prasad's nice (but outdated) [Deadweight](https://github.com/aanand/deadweight) gem. Thank you for your pioneer work!
+Headhunter is heavily inspired by Aanand Prasad's nice (but outdated) [Deadweight](https://github.com/aanand/deadweight) gem. Thank you for your pioneering work!
 
-USE THIS GEM AT YOUR OWN RISK
+**USE THIS GEM AT YOUR OWN RISK!**
+
+All provided functionality is provided "as is". You are highly welcome to file issues, feature requests and pull requests.
