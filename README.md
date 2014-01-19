@@ -73,6 +73,7 @@ You need a **working internet connection** to run CSS validation. As a Rails app
 - Would be really useful to have the concrete URL of every validated HTML page. But can't find a way to extract it from Rack response.
 - There are not tests yet. I first want to see whether this gem would be appreciated by the community, and if so, I will definitely add tests.
 - Didn't try this with AJAX requests yet. Would be great if such responses would be validated, too!
+- In feature tests, the same views are getting rendered again and again. These same sources shouldn't be validated over and over again!
 
 ## Disclaimer
 
