@@ -23,7 +23,7 @@ class Headhunter
     def report
       log.puts "Found #{@used_selectors.size + @unused_selectors.size} CSS selectors.".yellow
       log.puts "#{@used_selectors.size} selectors are in use.".green if @used_selectors.size > 0
-      log.puts "#{@unused_selectors.size} selectors are not: #{@unused_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
+      log.puts "#{@unused_selectors.size} selectors are not in use: #{@unused_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
       log.puts
     end
 
@@ -105,12 +105,12 @@ class Headhunter
 
     # TODO: suppress logging output of rake tasks!
     def precompile_assets!
-      # system "rake assets:clobber HEADHUNTER=false" # Remove existing assets! This seems to be necessary to make sure that they don't exist twice, see http://stackoverflow.com/questions/20938891
-      system "rake assets:precompile HEADHUNTER=false"
+      system "rake assets:clobber HEADHUNTER=false &> /dev/null" # Remove existing assets! This seems to be necessary to make sure that they don't exist twice, see http://stackoverflow.com/questions/20938891
+      system "rake assets:precompile HEADHUNTER=false &> /dev/null"
     end
 
     def remove_assets!
-      system "rake assets:clobber HEADHUNTER=false"
+      system "rake assets:clobber HEADHUNTER=false &> /dev/null"
     end
   end
 
