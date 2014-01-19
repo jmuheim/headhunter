@@ -14,5 +14,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'css_parser', '~> 1.2.6'
   s.add_dependency 'html_validation'
   s.add_dependency 'colorize'
-end
 
+  s.add_dependency('rspec')
+  s.add_development_dependency('fuubar')
+  s.add_development_dependency('rake')
+  s.add_development_dependency('rspec', '>= 2.0')
+end
