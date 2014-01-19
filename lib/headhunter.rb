@@ -1,4 +1,6 @@
-require 'headhunter/rake_task'
+require 'headhunter/rails'
+require 'html_validation'
+require 'rack/utils'
 
 class Result
   attr_accessor :url, :html, :results
