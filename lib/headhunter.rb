@@ -1,7 +1,6 @@
 require 'headhunter/rails'
 require 'headhunter/css_hunter'
 require 'headhunter/html_hunter'
-require 'html_validation'
 require 'rack/utils'
 
 class Headhunter

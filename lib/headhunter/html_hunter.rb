@@ -1,3 +1,5 @@
+require 'html_validation'
+
 class Headhunter
   class HtmlHunter
     def initialize
@@ -33,9 +35,10 @@ class Headhunter
 
     def report
       log.puts "Validated #{@valid_results.size + @invalid_results.size} HTML pages.".yellow
-      log.puts "#{x_pages_be(@valid_results.size)} valid.".green
-      log.puts "#{x_pages_be(@invalid_results.size)} invalid.".red
+      log.puts "#{x_pages_be(@valid_results.size)} valid.".green if @valid_results.size > 0
+      log.puts "#{x_pages_be(@invalid_results.size)} invalid.".red if @invalid_results.size > 0
       log.puts 'Open .validation/results.html to view full results.'
+      log.puts
     end
 
     private
