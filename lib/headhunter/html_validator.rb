@@ -1,7 +1,7 @@
 require 'html_validation'
 
 class Headhunter
-  class HtmlHunter
+  class HtmlValidator
     def initialize
       @valid_results   = []
       @invalid_results = []
