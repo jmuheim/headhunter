@@ -18,11 +18,7 @@ group :test do
 end
 ```
 
-Just set the environment variable `HEADHUNTER` to `true` when running your tests, e.g.:
-
-- `rake HEADHUNTER=true`
-- `HEADHUNTER=true rspec`
-- `HEADHUNTER=true cucumber`
+Just set the environment variable `HEADHUNTER` to `true` when running your tests, e.g. `$ rake HEADHUNTER=true`.
 
 Headhunter doesn't keep your tests from passing if invalid HTML or unused CSS is found. Instead it displays a short statistic after the tests are run.
 
