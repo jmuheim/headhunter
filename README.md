@@ -4,7 +4,15 @@ Headhunter is an HTML and CSS validation tool that injects itself into your Rail
 
 In addition, it also looks out for unused (and therefore superfluous) CSS selectors.
 
-## How to execute
+## How to use
+
+Add Headhunter to your `Gemfile`:
+
+```ruby
+group :test do
+  gem 'headhunter'
+end
+```
 
 Just set the environment variable `HEADHUNTER` to `true` when running your tests, e.g.:
 
