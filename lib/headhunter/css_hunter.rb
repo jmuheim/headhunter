@@ -4,9 +4,8 @@ require 'open-uri'
 
 class Headhunter
   class CssHunter
-    def initialize(root)
-      @root             = root
-      @stylesheets      = []
+    def initialize(stylesheets)
+      @stylesheets      = stylesheets
       @parsed_rules     = {}
       @unused_selectors = []
       @used_selectors   = []
@@ -25,10 +24,6 @@ class Headhunter
       log.puts "#{@used_selectors.size} selectors are in use.".green if @used_selectors.size > 0
       log.puts "#{@unused_selectors.size} selectors are not in use: #{@unused_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
       log.puts
-    end
-
-    def clean_up!
-      remove_assets!
     end
 
     private
@@ -51,18 +46,15 @@ class Headhunter
     end
 
     def load_css!
-      precompile_assets!
-      @stylesheets += Dir.chdir(@root) { Dir.glob("public/assets/*.css") }
-
-      @stylesheets.each do |path|
-        new_selector_count = add_css!(fetch(path))
+      @stylesheets.each do |stylesheet|
+        new_selector_count = add_css!(fetch(stylesheet))
       end
     end
 
     def fetch(path)
       log.puts(path)
 
-      loc = "#{@root}/#{path}"
+      loc = path
 
       begin
         open(loc).read
@@ -101,16 +93,6 @@ class Headhunter
       selector = selector.gsub(/^@.*/, '') # @-webkit-keyframes ...
       selector = selector.gsub(/:.*/, '')  # input#x:nth-child(2):not(#z.o[type='file'])
       selector
-    end
-
-    # TODO: suppress logging output of rake tasks!
-    def precompile_assets!
-      system "rake assets:clobber HEADHUNTER=false &> /dev/null" # Remove existing assets! This seems to be necessary to make sure that they don't exist twice, see http://stackoverflow.com/questions/20938891
-      system "rake assets:precompile HEADHUNTER=false &> /dev/null"
-    end
-
-    def remove_assets!
-      system "rake assets:clobber HEADHUNTER=false &> /dev/null"
     end
   end
 
