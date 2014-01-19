@@ -1,13 +1,14 @@
 # encoding: utf-8
 
 Gem::Specification.new do |s|
-  s.name     = 'headhunter'
-  s.version  = '0.0.1'
-  s.authors  = ['Joshua Muheim']
-  s.email    = 'josh@muheimwebdesign.ch'
-  s.homepage = 'http://github.com/jmuheim/headhunter'
-  s.summary  = 'An automatic HTML validator hooks into your request/acceptance/feature test suite and validates your HTML after every request'
-  s.license  = 'MIT'
+  s.name        = 'headhunter'
+  s.version     = '0.0.1'
+  s.authors     = ['Joshua Muheim']
+  s.email       = 'josh@muheimwebdesign.ch'
+  s.homepage    = 'http://github.com/jmuheim/headhunter'
+  s.summary     = 'Zero config HTML & CSS validation tool for Rails apps'
+  s.description = 'Headhunter is an HTML and CSS validation tool that injects itself into your Rails feature tests and automagically checks all your generated HTML and CSS for validity. In addition, it also looks out for unused (and therefore superfluous) CSS selectors.'
+  s.license     = 'MIT'
 
   s.add_dependency 'nokogiri'
   s.add_dependency 'css_parser', '~> 1.2.6'
