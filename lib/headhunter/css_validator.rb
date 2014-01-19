@@ -27,13 +27,17 @@ class Headhunter
       log.puts "#{x_stylesheets_be(@messages_per_stylesheet.size)} invalid.".red if @messages_per_stylesheet.size > 0
 
       @messages_per_stylesheet.each_pair do |stylesheet, messages|
-        log.puts "  #{stylesheet}:".red
+        log.puts "  #{extract_filename(stylesheet)}:".red
 
         messages.each { |message| log.puts "  - #{message}".red }
       end
     end
 
     private
+
+    def extract_filename(path)
+      binding.pry
+    end
 
     def x_stylesheets_be(size)
       if size <= 1
