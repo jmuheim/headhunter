@@ -33,7 +33,22 @@ class Headhunter
 
   def report
     log.puts "Validated #{@valid_results.size + @invalid_results.size} HTML pages.".yellow
-    log.puts "#{@valid_results.size} pages are valid.".green
-    log.puts "#{@invalid_results.size} pages are invalid.".red
+    log.puts "#{x_pages_be(@valid_results.size)} valid.".green
+    log.puts "#{x_pages_be(@invalid_results.size)} invalid.".red
+    log.puts 'Open .validation/results.html to view full results.'
+  end
+
+  private
+
+  def x_pages_be(size)
+    if size <= 1
+      "#{size} page is"
+    else
+      "#{size} pages are"
+    end
+  end
+
+  def random_name
+    (0...8).map { (65 + rand(26)).chr }.join
   end
 end
