@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'headhunter'
-  s.version     = '0.0.1'
+  s.version     = '0.0.2'
   s.authors     = ['Joshua Muheim']
   s.email       = 'josh@muheimwebdesign.ch'
   s.homepage    = 'http://github.com/jmuheim/headhunter'
