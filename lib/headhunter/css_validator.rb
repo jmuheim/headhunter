@@ -134,6 +134,7 @@ module Headhunter
       Dir.chdir(path) do
         File.open(css_file, 'a') { |f| f.write query_params[:text] }
 
+        # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
         if system "java -jar css-validator.jar --output=soap12 file:#{css_file} > #{results_file}"
           results = IO.read results_file
         else
