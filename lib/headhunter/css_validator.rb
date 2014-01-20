@@ -52,6 +52,8 @@ module Headhunter
 
         messages.each { |message| log.puts "  - #{message}".red }
       end
+
+      log.puts
     end
 
     private
@@ -74,8 +76,16 @@ module Headhunter
       @messages_per_stylesheet[file] = []
 
       REXML::Document.new(response.body).root.each_element('//m:error') do |e|
-        @messages_per_stylesheet[file] << "Line #{e.elements['m:line'].text}: #{e.elements['m:message'].get_text.value.strip}\n"
+        @messages_per_stylesheet[file] << "Line #{extract_line_from_error(e)}: #{extract_message_from_error(e)}"
       end
+    end
+
+    def extract_line_from_error(e)
+      e.elements['m:line'].text
+    end
+
+    def extract_message_from_error(e)
+      e.elements['m:message'].get_text.value.strip[0..-2]
     end
 
     def fetch(path) # TODO: Move to Headhunter!
