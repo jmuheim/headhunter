@@ -2,7 +2,28 @@ require 'net/http'
 require 'rexml/document'
 
 module Headhunter
+  class LocalResponse
+    attr_reader :body
+
+    def initialize(body)
+      @body = body
+      @headers = {'x-w3c-validator-status' => valid?(body)}
+    end
+
+    def [](key)
+      @headers[key]
+    end
+
+    private
+
+    def valid?(body)
+      REXML::Document.new(body).root.each_element('//m:validity') { |e| return e.text == 'true' }
+    end
+  end
+
   class CssValidator
+    USE_LOCAL_VALIDATOR = true
+
     def initialize(stylesheets)
       @profile = 'css3' # TODO: Option for profile css1 and css21
       @stylesheets = stylesheets
@@ -71,24 +92,49 @@ module Headhunter
 
     def get_validation_response(query_params)
       query_params.merge!({:output => 'soap12'})
-      get_validator_response(query_params)
+
+      if USE_LOCAL_VALIDATOR
+        call_local_validator(query_params)
+      else
+        call_remote_validator(query_params)
+      end
     end
 
     def response_indicates_valid?(response)
       response['x-w3c-validator-status'] == 'Valid'
     end
 
-    def get_validator_response(query_params = {})
-      response = call_validator(query_params)
+    def call_remote_validator(query_params = {})
+      boundary = Digest::MD5.hexdigest(Time.now.to_s)
+      data = encode_multipart_params(boundary, query_params)
+      response = http_start(validator_host).post2(validator_path,
+                                                  data,
+                                                  'Content-type' => "multipart/form-data; boundary=#{boundary}")
 
       raise "HTTP error: #{response.code}" unless response.is_a? Net::HTTPSuccess
       response
     end
 
-    def call_validator(query_params)
-      boundary = Digest::MD5.hexdigest(Time.now.to_s)
-      data = encode_multipart_params(boundary, query_params)
-      http_start(validator_host).post2(validator_path, data, "Content-type" => "multipart/form-data; boundary=#{boundary}" )
+    def call_local_validator(query_params)
+      path         = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
+      css_file     = 'tmp.css'
+      results_file = 'results'
+      results      = nil
+
+      Dir.chdir(path) do
+        File.open(css_file, 'a') { |f| f.write query_params[:text] }
+
+        if system "java -jar css-validator.jar --output=soap12 file:#{css_file} > #{results_file}"
+          results = IO.read results_file
+        else
+          raise 'Could not execute local validation!'
+        end
+
+        File.delete css_file
+        File.delete results_file
+      end
+
+      LocalResponse.new(results)
     end
 
     def encode_multipart_params(boundary, params = {})
