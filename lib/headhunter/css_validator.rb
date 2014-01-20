@@ -53,7 +53,7 @@ module Headhunter
       @messages_per_stylesheet[file] = []
 
       REXML::Document.new(response.body).root.each_element('//m:error') do |e|
-        @messages_per_stylesheet[file] << "#{error_line_prefix}: line #{e.elements['m:line'].text}: #{e.elements['m:message'].get_text.value.strip}\n"
+        @messages_per_stylesheet[file] << "Line #{e.elements['m:line'].text}: #{e.elements['m:message'].get_text.value.strip}\n"
       end
     end
 
@@ -82,13 +82,13 @@ module Headhunter
       response = call_validator(query_params)
 
       raise "HTTP error: #{response.code}" unless response.is_a? Net::HTTPSuccess
-      return response
+      response
     end
 
     def call_validator(query_params)
       boundary = Digest::MD5.hexdigest(Time.now.to_s)
       data = encode_multipart_params(boundary, query_params)
-      return http_start(validator_host).post2(validator_path, data, "Content-type" => "multipart/form-data; boundary=#{boundary}" )
+      http_start(validator_host).post2(validator_path, data, "Content-type" => "multipart/form-data; boundary=#{boundary}" )
     end
 
     def encode_multipart_params(boundary, params = {})
