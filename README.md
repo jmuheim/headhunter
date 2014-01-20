@@ -63,7 +63,7 @@ For being able to validate CSS, `rake assets:precompile` is triggered at the beg
 
 **[Tidy HTML](http://tidy.sourceforge.net/)** should be installed on a typical OSX and Linux installation already. You're not developing on a Windows machine, are you?! If you want to validate HTML5 (and you should want to!), install the HTML5 version like described here: [homebrew tidy html5](http://techblog.willshouse.com/2013/10/21/homebrew-tidy-html5/).
 
-You need a **Java Runtime Environment** to run CSS validation. This should normally already be available on OSX and Linux machines, too. A local copy (`[css-validator.jar](http://jigsaw.w3.org/css-validator/DOWNLOAD.html)`) of the [W3 CSS Validation Service](http://jigsaw.w3.org/css-validator/) is used.
+You need a **Java Runtime Environment** to run CSS validation. This should normally already be available on OSX and Linux machines, too. A local copy ([`css-validator.jar`](http://jigsaw.w3.org/css-validator/DOWNLOAD.html)) of the [W3 CSS Validation Service](http://jigsaw.w3.org/css-validator/) is used.
 
 ## Known issues and future plans
 
