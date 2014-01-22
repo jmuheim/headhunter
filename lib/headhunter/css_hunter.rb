@@ -9,6 +9,7 @@ module Headhunter
       @parsed_rules     = {}
       @unused_selectors = []
       @used_selectors   = []
+      @error_selectors  = []
 
       load_css!
     end
@@ -20,9 +21,10 @@ module Headhunter
     end
 
     def report
-      log.puts "Found #{@used_selectors.size + @unused_selectors.size} CSS selectors.".yellow
+      log.puts "Found #{@used_selectors.size + @unused_selectors.size + @error_selectors.size} CSS selectors.".yellow
       log.puts "#{@used_selectors.size} selectors are in use.".green if @used_selectors.size > 0
       log.puts "#{@unused_selectors.size} selectors are not in use: #{@unused_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
+      log.puts "#{@error_selectors.size} selectors could not be parsed: #{@error_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
       log.puts
     end
 
@@ -38,9 +40,13 @@ module Headhunter
 
         next if stripped_selector.empty?
 
-        if doc.search(stripped_selector).any?
-          @used_selectors << selector
-          selector
+        begin
+          if doc.search(stripped_selector).any?
+            @used_selectors << selector
+            selector
+          end
+        rescue Nokogiri::CSS::SyntaxError => e
+          @error_selectors << selector
         end
       end
     end
