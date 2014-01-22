@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    headhunter (0.0.9)
+    headhunter (0.1.3)
       colorize
       css_parser (~> 1.2.6)
       html_validation
