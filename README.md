@@ -1,6 +1,6 @@
-<img src="docs/headhunter.png" alt="Headhunter" align="right" />
-
 # Headhunter
+
+<img src="docs/headhunter.png" alt="Headhunter" align="right" />
 
 [![Gem Version](https://badge.fury.io/rb/headhunter.png)](http://badge.fury.io/rb/headhunter)
 [![Code Climate](https://codeclimate.com/github/jmuheim/headhunter.png)](https://codeclimate.com/github/jmuheim/headhunter)
