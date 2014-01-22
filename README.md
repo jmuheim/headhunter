@@ -1,6 +1,6 @@
 # Headhunter
 
-<img src="docs/headhunter.png" alt="Headhunter" align="right" />
+<img src="docs/headhunter.png" alt="The headhunter character from Lucky Luke" align="right" />
 
 [![Gem Version](https://badge.fury.io/rb/headhunter.png)](http://badge.fury.io/rb/headhunter)
 [![Code Climate](https://codeclimate.com/github/jmuheim/headhunter.png)](https://codeclimate.com/github/jmuheim/headhunter)
@@ -85,3 +85,5 @@ Headhunter is heavily inspired by Aanand Prasad's [Deadweight gem](https://githu
 **USE THIS GEM AT YOUR OWN RISK!**
 
 All provided functionality is provided "as is".
+
+<img src="docs/money.png" alt="" align="middle" />
