@@ -25,5 +25,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rake')
   s.add_development_dependency('rspec', '>= 2.0')
 
-  s.files = Dir['{lib/**/*,[A-Z]*}']
+  s.files = Dir['{lib/**/*,[A-Z]*}'] + Dir['docs/*.png']
 end

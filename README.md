@@ -6,7 +6,7 @@
 [![Code Climate](https://codeclimate.com/github/jmuheim/headhunter.png)](https://codeclimate.com/github/jmuheim/headhunter)
 [![Travis CI](https://api.travis-ci.org/jmuheim/headhunter.png)](https://travis-ci.org/jmuheim/headhunter)
 
-Headhunter is an HTML and CSS validation tool that injects itself into your Rails feature tests and automagically checks all your generated HTML and CSS for validity.
+Headhunter is an HTML and CSS validation tool that injects itself into your Rails feature tests and auto**magic**ally checks all your generated HTML and CSS for validity.
 
 In addition, it also looks out for unused (and therefore superfluous) CSS selectors.
 
