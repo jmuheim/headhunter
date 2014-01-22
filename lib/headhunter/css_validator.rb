@@ -60,8 +60,11 @@ module Headhunter
 
     # Converts a path like public/assets/application-d205d6f344d8623ca0323cb6f6bd7ca1.css to application.css
     def extract_filename(path)
-      matches = path.match /^public\/assets\/(.*)-([a-z0-9]*)(\.css)/
-      matches[1] + matches[3]
+      if matches = path.match(/^public\/assets\/(.*)-?([a-z0-9]*)(\.css)/)
+        matches[1] + matches[3]
+      else
+        raise "Unexpected path: #{path}"
+      end
     end
 
     def x_stylesheets_be(size)
