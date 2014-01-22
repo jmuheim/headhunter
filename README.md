@@ -86,6 +86,4 @@ Headhunter is heavily inspired by Aanand Prasad's [Deadweight gem](https://githu
 
 All provided functionality is provided "as is".
 
-<center>
-  <img src="docs/money.png" alt="" align="middle" />
-</center>
+<img src="docs/money.png" alt="" align="left" />
