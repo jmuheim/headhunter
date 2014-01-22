@@ -25,7 +25,9 @@ module Headhunter
     end
 
     def clean_up!
+      log.print "Headhunter is removing precompiled assets...".yellow
       remove_assets!
+      log.puts " done!".yellow
     end
 
     def report
@@ -39,8 +41,14 @@ module Headhunter
     private
 
     def precompile_assets!
-      log.print "\nPrecompiling assets for Headhunter...".yellow
+      log.print "Headhunter is removing eventually existing assets...".yellow
       remove_assets! # Remove existing assets! This seems to be necessary to make sure that they don't exist twice, see http://stackoverflow.com/questions/20938891
+      sleep 1
+      log.puts " done!".yellow
+
+      sleep 1
+
+      log.print "Headhunter is precompiling assets...".yellow
       system 'rake assets:precompile HEADHUNTER=false &> /dev/null'
       log.puts " done!\n".yellow
     end
