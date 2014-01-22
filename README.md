@@ -1,3 +1,5 @@
+<img src="docs/headhunter.png" alt="Headhunter" align="right" />
+
 # Headhunter
 
 [![Gem Version](https://badge.fury.io/rb/headhunter.png)](http://badge.fury.io/rb/headhunter)
