@@ -32,28 +32,7 @@ $ HEADHUNTER=true cucumber
 
 Headhunter doesn't keep your tests from passing if invalid HTML or unused CSS is found. Instead it displays a short statistic after the tests are run.
 
-    $ rake HEADHUNTER=true
-
-    Precompiling assets for Headhunter... done!
-
-    30/30 |============================= 100 ==============================>| Time: 00:00:02
-
-    Finished in 2.65 seconds
-    30 examples, 0 failures
-
-    Validated 42 HTML pages.
-    41 pages are valid.
-    1 page is invalid.
-    Open .validation/results.html to view full results.
-
-    Validated 1 stylesheets.
-    1 stylesheet is invalid.
-      application.css:
-      - Line 1: Property bla doesn't exist
-
-    Found 23 CSS selectors.
-    20 selectors are in use.
-    3 selectors are not in use: a img, #flash.failure, input[type='file']
+![Headhunter output](docs/screenshot.png)
 
 ## How it works
 
