@@ -70,3 +70,7 @@ Headhunter is heavily inspired by Aanand Prasad's [Deadweight gem](https://githu
 All provided functionality is provided "as is".
 
 <img src="docs/money.png" alt="" align="left" />
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jmuheim/headhunter/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
