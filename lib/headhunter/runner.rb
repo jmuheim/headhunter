@@ -13,9 +13,9 @@ module Headhunter
       precompile_assets!
 
       @html_validator = HtmlValidator.new
-      @css_validator  = CssValidator.new(stylesheets)
       @css_hunter     = CssHunter.new(stylesheets)
 
+      @css_validator = CssValidator.new(stylesheets)
       @css_validator.process!
     end
 

@@ -24,10 +24,14 @@ module Headhunter
   class CssValidator
     USE_LOCAL_VALIDATOR = true
 
-    def initialize(stylesheets)
+    def initialize(stylesheets = [])
       @profile = 'css3' # TODO: Option for profile css1 and css21
       @stylesheets = stylesheets
       @messages_per_stylesheet = {}
+    end
+
+    def add_stylesheet(stylesheet)
+      @stylesheets << stylesheet
     end
 
     def process!
