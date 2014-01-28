@@ -19,11 +19,16 @@ module Headhunter
     end
 
     def errors
-      binding.pry
-      @document.root.each_element('//m:error').inject([]) do |memo, error|
-        memo << {line:    extract_line_from_error(error),
-                 message: extract_message_from_error(error)}
+      if @errors.nil?
+        @errors = []
+
+        @document.root.each_element('//m:error') do |error|
+          @errors << {line:    extract_line_from_error(error),
+                      message: extract_message_from_error(error)}
+        end
       end
+
+      @errors
     end
 
     private

@@ -2,53 +2,33 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Headhunter::LocalResponse do
   context 'valid response' do
-    subject do
-      Headhunter::LocalResponse.new(
-        <<-EOF
-          <env:Envelope xmlns:env='http://www.w3.org/2003/05/soap-envelope'>
-            <m:cssvalidationresponse
-              env:encodingStyle='http://www.w3.org/2003/05/soap-encoding'
-              xmlns:m='http://www.w3.org/2005/07/css-validator'>
-              <m:validity>true</m:validity>
-            </m:cssvalidationresponse>
-          </env:Envelope>
-        EOF
-      )
-    end
+    subject { Headhunter::LocalResponse.new(read_file('valid_response.xml')) }
 
-    it { should be_valid }
+    describe '#initialize' do
+      it { should be_valid }
 
-    it 'sets the w3c validator status header to true' do
-      expect(subject['x-w3c-validator-status']).to be_true
+      it 'sets the w3c validator status header to true' do
+        expect(subject['x-w3c-validator-status']).to be_true
+      end
     end
   end
 
   context 'invalid response' do
-    subject do
-      Headhunter::LocalResponse.new(
-        <<-EOF
-          <env:Envelope xmlns:env='http://www.w3.org/2003/05/soap-envelope'>
-            <m:cssvalidationresponse
-              env:encodingStyle='http://www.w3.org/2003/05/soap-encoding'
-              xmlns:m='http://www.w3.org/2005/07/css-validator'>
-              <m:validity>false</m:validity>
-            </m:cssvalidationresponse>
-          </env:Envelope>
-        EOF
+    subject { Headhunter::LocalResponse.new(read_file('invalid_response.xml')) }
 
-      )
-    end
+    describe '#initialize' do
+      it { should_not be_valid }
 
-    it { should_not be_valid }
-
-    it 'sets the w3c validator status header to false' do
-      expect(subject['x-w3c-validator-status']).to be_false
+      it 'sets the w3c validator status header to false' do
+        expect(subject['x-w3c-validator-status']).to be_false
+      end
     end
 
     describe '#extract_line_from_error' do
-      it 'extracts the line number from an error object' do
-        expect(subject.send :extract_line_from_error, subject.errors.first).to eq 'Bla'
-      end
+      # it 'extracts the line number from an error object' do
+      #   error = subject.document
+      #   expect(subject.send :extract_line_from_error, error).to eq 'Bla'
+      # end
     end
   end
 end
