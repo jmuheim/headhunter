@@ -1,0 +1,31 @@
+html, body
+{
+	background:#007086;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:0.83em;
+	margin:0;
+	padding:0;
+}
+ul, ul li
+{
+  list-style-type: none;
+}
+.hidden
+{
+	display: none;
+}
+a img
+{
+	border: none;
+}
+a
+{
+  text-decoration: none;
+}
+.clear-float
+{
+  clear: both;
+  font-size: 1px;
+  height: 0px;
+  line-height: 0px;
+}
