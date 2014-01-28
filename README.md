@@ -5,6 +5,7 @@
 [![Gem Version](https://badge.fury.io/rb/headhunter.png)](http://badge.fury.io/rb/headhunter)
 [![Code Climate](https://codeclimate.com/github/jmuheim/headhunter.png)](https://codeclimate.com/github/jmuheim/headhunter)
 [![Travis CI](https://api.travis-ci.org/jmuheim/headhunter.png)](https://travis-ci.org/jmuheim/headhunter)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jmuheim/headhunter/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 Headhunter is an HTML and CSS validation tool that injects itself into your Rails feature tests and auto**magic**ally checks all your generated HTML and CSS for validity.
 
@@ -70,7 +71,3 @@ Headhunter is heavily inspired by Aanand Prasad's [Deadweight gem](https://githu
 All provided functionality is provided "as is".
 
 <img src="docs/money.png" alt="" align="left" />
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jmuheim/headhunter/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
