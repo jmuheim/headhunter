@@ -58,6 +58,8 @@ You need a **Java Runtime Environment** to run CSS validation. This should norma
 - In feature tests, the same views are getting rendered again and again. These same sources shouldn't be validated over and over again!
 - More configuration options needed! CSS1, CSS2, CSS2.1, CSS3! XHTML, HTML5, etc.
 - Better output needed! With context lines, etc.
+- Look out for multiple used IDs on the same page and raise error!
+- Look out for invalid tags and raise error (tidy doesn't seem to do this?!)!
 
 ## Disclaimer
 
