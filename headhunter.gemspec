@@ -19,8 +19,11 @@ Gem::Specification.new do |s|
   s.add_dependency 'html_validation'
   s.add_dependency 'colorize'
 
-  s.add_dependency('rspec')
+  s.add_development_dependency('rspec')
   s.add_development_dependency('fuubar')
+  s.add_development_dependency('pry')
+  s.add_development_dependency('coolline')
+  s.add_development_dependency('awesome_print')
   s.add_development_dependency('gem-release')
   s.add_development_dependency('rake')
   s.add_development_dependency('rspec', '>= 2.0')
