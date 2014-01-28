@@ -35,6 +35,7 @@ describe Headhunter::LocalResponse do
             </m:cssvalidationresponse>
           </env:Envelope>
         EOF
+
       )
     end
 
@@ -42,6 +43,12 @@ describe Headhunter::LocalResponse do
 
     it 'sets the w3c validator status header to false' do
       expect(subject['x-w3c-validator-status']).to be_false
+    end
+
+    describe '#extract_line_from_error' do
+      it 'extracts the line number from an error object' do
+        expect(subject.send :extract_line_from_error, subject.errors.first).to eq 'Bla'
+      end
     end
   end
 end

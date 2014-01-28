@@ -4,57 +4,59 @@ unless defined?(SpecFailed)
   SpecFailed = RSpec::Expectations::ExpectationNotMetError
 end
 
-describe Headhunter::CssValidator do
-  subject(:css) { described_class.new }
+describe Headhunter::CssValidator::Validator do
+  describe '#validate_file' do
+    def absolute_path(file)
+      "/Users/josh/Documents/Work/MuheimWebdesign/Headhunter/spec/files/#{file}"
+    end
 
-  it 'should validate a valid string' do
-    css.add_stylesheet('/Users/josh/Documents/Work/MuheimWebdesign/Headhunter/spec/files/valid.css')
-    binding.pry
-  end
-  
-  it "should validate an empty string" do
-    ''.should be_valid_css
+    it 'raises an error if the file can not be found'
+
+    it 'returns a valid result for a valid CSS file' do
+      result = described_class.validate_file(absolute_path('valid.css'))
+      expect(result).to be_valid
+    end
+
+    it 'returns an invalid result for an invalid CSS file' do
+      result = described_class.validate_file(absolute_path('invalid.css'))
+      expect(result).not_to be_valid
+      binding.pry
+      # css = get_file('invalid.css')
+      # lambda {
+      #   css.should be_valid_css
+      # }.should raise_error(SpecFailed) { |e|
+      #   e.message.should match(/expected css to be valid, but validation produced these errors/)
+      #   e.message.should match(/Invalid css: line 8: Property wibble doesn't exist/)
+      # }
+    end
+
+    it "should not validate an invalid response" do
+      response = MockResponse.new(get_file('invalid.css'))
+      lambda {
+        response.should be_valid_css
+      }.should raise_error(SpecFailed) { |e|
+        e.message.should match(/expected css to be valid, but validation produced these errors/)
+        e.message.should match(/Invalid css: line 8: Property wibble doesn't exist/)
+      }
+    end
+
+    it "should display invalid content when requested" do
+      BeValidAsset::Configuration.display_invalid_content = true
+      css = get_file('invalid.css')
+      lambda {
+        css.should be_valid_css
+      }.should raise_error(SpecFailed) { |e|
+        e.message.should match(/wibble:0;/)
+      }
+      BeValidAsset::Configuration.display_invalid_content = false
+    end
   end
 
-  it "should validate a valid response" do
-    response = MockResponse.new(get_file('valid.css'))
-    response.should be_valid_css
-  end
-
-  it "should validate if body is not a string but can be converted to valid string" do
-    response = MockResponse.new(stub("CSS", :to_s => get_file('valid.css')))
-    response.should be_valid_css
-  end
-
-  it "should not validate an invalid string" do
-    css = get_file('invalid.css')
-    lambda {
-      css.should be_valid_css
-    }.should raise_error(SpecFailed) { |e|
-      e.message.should match(/expected css to be valid, but validation produced these errors/)
-      e.message.should match(/Invalid css: line 8: Property wibble doesn't exist/)
-    }
-  end
-
-  it "should not validate an invalid response" do
-    response = MockResponse.new(get_file('invalid.css'))
-    lambda {
-      response.should be_valid_css
-    }.should raise_error(SpecFailed) { |e|
-      e.message.should match(/expected css to be valid, but validation produced these errors/)
-      e.message.should match(/Invalid css: line 8: Property wibble doesn't exist/)
-    }
-  end
-
-  it "should display invalid content when requested" do
-    BeValidAsset::Configuration.display_invalid_content = true
-    css = get_file('invalid.css')
-    lambda {
-      css.should be_valid_css
-    }.should raise_error(SpecFailed) { |e|
-      e.message.should match(/wibble:0;/)
-    }
-    BeValidAsset::Configuration.display_invalid_content = false
+  describe '#validate_string' do
+    it 'should validate an empty string' do
+      result = described_class.validate_string('')
+      expect(result.valid?).to be true
+    end
   end
 
   it "should fail unless resposne is HTTP OK" do

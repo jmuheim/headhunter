@@ -1,27 +1,42 @@
+require 'headhunter/local_response'
 require 'net/http'
-require 'rexml/document'
 
 module Headhunter
-  class LocalResponse
-    attr_reader :body
-
-    def initialize(body)
-      @body = body
-      @headers = {'x-w3c-validator-status' => valid?(body)}
-    end
-
-    def [](key)
-      @headers[key]
-    end
-
-    private
-
-    def valid?(body)
-      REXML::Document.new(body).root.each_element('//m:validity') { |e| return e.text == 'true' }
-    end
-  end
-
   class CssValidator
+    class Validator
+      def self.validate_file(path_to_file)
+        validate_string(fetch_file_content(path_to_file))
+      end
+
+      def self.validate_string(string)
+        tmp_path     = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
+        css_file     = 'tmp.css'
+        results_file = 'results'
+        results      = nil
+
+        Dir.chdir(tmp_path) do
+          File.open(css_file, 'a') { |f| f.write string }
+
+          # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
+          if system "java -jar css-validator.jar --output=soap12 file:#{css_file} > #{results_file}"
+            results = IO.read results_file
+          else
+            raise 'Could not execute local validation!'
+          end
+
+          File.delete css_file
+          File.delete results_file
+        end
+
+        LocalResponse.new(results)
+      end
+
+      def self.fetch_file_content(path_to_file)
+        # TODO: Catch exceptions!
+        IO.read(path_to_file)
+      end
+    end
+
     USE_LOCAL_VALIDATOR = true
 
     def initialize(stylesheets = [])
@@ -47,17 +62,17 @@ module Headhunter
     end
 
     def report
-      log.puts "Validated #{@stylesheets.size} stylesheets.".yellow
-      log.puts "#{x_stylesheets_be(@stylesheets.size - @messages_per_stylesheet.size)} valid.".green if @messages_per_stylesheet.size < @stylesheets.size
-      log.puts "#{x_stylesheets_be(@messages_per_stylesheet.size)} invalid.".red if @messages_per_stylesheet.size > 0
+      puts "Validated #{@stylesheets.size} stylesheets.".yellow
+      puts "#{x_stylesheets_be(@stylesheets.size - @messages_per_stylesheet.size)} valid.".green if @messages_per_stylesheet.size < @stylesheets.size
+      puts "#{x_stylesheets_be(@messages_per_stylesheet.size)} invalid.".red if @messages_per_stylesheet.size > 0
 
       @messages_per_stylesheet.each_pair do |stylesheet, messages|
-        log.puts "  #{extract_filename(stylesheet)}:".red
+        puts "  #{extract_filename(stylesheet)}:".red
 
-        messages.each { |message| log.puts "  - #{message}".red }
+        messages.each { |message| puts "  - #{message}".red }
       end
 
-      log.puts
+      puts
     end
 
     private
@@ -77,22 +92,6 @@ module Headhunter
       else
         "#{size} stylesheets are"
       end
-    end
-
-    def process_errors(file, css, response)
-      @messages_per_stylesheet[file] = []
-
-      REXML::Document.new(response.body).root.each_element('//m:error') do |e|
-        @messages_per_stylesheet[file] << "Line #{extract_line_from_error(e)}: #{extract_message_from_error(e)}"
-      end
-    end
-
-    def extract_line_from_error(e)
-      e.elements['m:line'].text
-    end
-
-    def extract_message_from_error(e)
-      e.elements['m:message'].get_text.value.strip[0..-2]
     end
 
     def fetch(path) # TODO: Move to Headhunter!
@@ -130,29 +129,6 @@ module Headhunter
 
       raise "HTTP error: #{response.code}" unless response.is_a? Net::HTTPSuccess
       response
-    end
-
-    def call_local_validator(query_params)
-      path         = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
-      css_file     = 'tmp.css'
-      results_file = 'results'
-      results      = nil
-
-      Dir.chdir(path) do
-        File.open(css_file, 'a') { |f| f.write query_params[:text] }
-
-        # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
-        if system "java -jar css-validator.jar --output=soap12 file:#{css_file} > #{results_file}"
-          results = IO.read results_file
-        else
-          raise 'Could not execute local validation!'
-        end
-
-        File.delete css_file
-        File.delete results_file
-      end
-
-      LocalResponse.new(results)
     end
 
     def encode_multipart_params(boundary, params = {})

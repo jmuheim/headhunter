@@ -1,5 +1,6 @@
 require 'headhunter'
 require 'pry'
+require 'colorize'
 
 $: << File.join(File.dirname(__FILE__), %w(.. lib))
 

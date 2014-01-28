@@ -34,11 +34,11 @@ module Headhunter
     end
 
     def report
-      log.puts "Validated #{@valid_results.size + @invalid_results.size} HTML pages.".yellow
-      log.puts "#{x_pages_be(@valid_results.size)} valid.".green if @valid_results.size > 0
-      log.puts "#{x_pages_be(@invalid_results.size)} invalid.".red if @invalid_results.size > 0
-      log.puts 'Open .validation/results.html to view full results.'
-      log.puts
+      puts "Validated #{@valid_results.size + @invalid_results.size} HTML pages.".yellow
+      puts "#{x_pages_be(@valid_results.size)} valid.".green if @valid_results.size > 0
+      puts "#{x_pages_be(@invalid_results.size)} invalid.".red if @invalid_results.size > 0
+      puts 'Open .validation/results.html to view full results.'
+      puts
     end
 
     private
