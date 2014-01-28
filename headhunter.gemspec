@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
 
   s.add_dependency 'nokogiri'
-  s.add_dependency 'css_parser', '~> 1.2.6'
+  s.add_dependency 'css_parser', '>= 1.2.6'
   s.add_dependency 'html_validation'
   s.add_dependency 'colorize'
 
