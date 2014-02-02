@@ -21,11 +21,11 @@ module Headhunter
     end
 
     def report
-      log.puts "Found #{@used_selectors.size + @unused_selectors.size + @error_selectors.size} CSS selectors.".yellow
-      log.puts "#{@used_selectors.size} selectors are in use.".green if @used_selectors.size > 0
-      log.puts "#{@unused_selectors.size} selectors are not in use: #{@unused_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
-      log.puts "#{@error_selectors.size} selectors could not be parsed: #{@error_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
-      log.puts
+      puts "Found #{@used_selectors.size + @unused_selectors.size + @error_selectors.size} CSS selectors.".yellow
+      puts "#{@used_selectors.size} selectors are in use.".green if @used_selectors.size > 0
+      puts "#{@unused_selectors.size} selectors are not in use: #{@unused_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
+      puts "#{@error_selectors.size} selectors could not be parsed: #{@error_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
+      puts
     end
 
     private

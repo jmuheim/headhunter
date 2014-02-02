@@ -47,17 +47,17 @@ module Headhunter
     end
 
     def report
-      log.puts "Validated #{@stylesheets.size} stylesheets.".yellow
-      log.puts "#{x_stylesheets_be(@stylesheets.size - @messages_per_stylesheet.size)} valid.".green if @messages_per_stylesheet.size < @stylesheets.size
-      log.puts "#{x_stylesheets_be(@messages_per_stylesheet.size)} invalid.".red if @messages_per_stylesheet.size > 0
+      puts "Validated #{@stylesheets.size} stylesheets.".yellow
+      puts "#{x_stylesheets_be(@stylesheets.size - @messages_per_stylesheet.size)} valid.".green if @messages_per_stylesheet.size < @stylesheets.size
+      puts "#{x_stylesheets_be(@messages_per_stylesheet.size)} invalid.".red if @messages_per_stylesheet.size > 0
 
       @messages_per_stylesheet.each_pair do |stylesheet, messages|
-        log.puts "  #{extract_filename(stylesheet)}:".red
+        puts "  #{extract_filename(stylesheet)}:".red
 
-        messages.each { |message| log.puts "  - #{message}".red }
+        messages.each { |message| puts "  - #{message}".red }
       end
 
-      log.puts
+      puts
     end
 
     private
