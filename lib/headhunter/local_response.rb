@@ -1,13 +1,12 @@
-require 'rexml/document'
+require 'nokogiri/xml'
 
 module Headhunter
   class LocalResponse
     attr_reader :body
 
     def initialize(body)
-      @body     = body
-      @document = REXML::Document.new(@body)
-      @headers  = {'x-w3c-validator-status' => valid?}
+      @body = Nokogiri::XML(body)
+      @headers = {'x-w3c-validator-status' => valid?}
     end
 
     def [](key)
@@ -15,30 +14,19 @@ module Headhunter
     end
 
     def valid?
-      @document.root.each_element('//m:validity') { |e| return e.text == 'true' }
+      @body.css('validity') == 'true'
     end
 
     def errors
-      if @errors.nil?
-        @errors = []
-
-        @document.root.each_element('//m:error') do |error|
-          @errors << {line:    extract_line_from_error(error),
-                      message: extract_message_from_error(error)}
-        end
+      @body.css('errors error').map do |error|
+        { line: error.css('line').text.strip.to_i,
+          errortype: error.css('errortype').text.strip,
+          context: error.css('context').text.strip,
+          errorsubtype: error.css('errorsubtype').text.strip,
+          skippedstring: error.css('skippedstring').text.strip,
+          message: error.css('message').text.strip[0..-3]
+        }
       end
-
-      @errors
-    end
-
-    private
-
-    def extract_line_from_error(error)
-      error.elements['m:line'].text
-    end
-
-    def extract_message_from_error(error)
-      error.elements['m:message'].get_text.value.strip[0..-2]
     end
   end
 end

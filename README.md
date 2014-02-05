@@ -61,6 +61,7 @@ You need a **Java Runtime Environment** to run CSS validation. This should norma
 - Better output needed! With context lines, etc.
 - Look out for multiple used IDs on the same page and raise error!
 - Look out for invalid tags and raise error (tidy doesn't seem to do this?!)!
+- Cache HTML validations: use MD5 to prevent validating the same source again and again! (Maybe even keep the cache between running specs!)
 
 ## Disclaimer
 

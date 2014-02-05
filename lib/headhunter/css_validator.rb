@@ -9,13 +9,13 @@ module Headhunter
       end
 
       def self.validate_string(string)
-        tmp_path     = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
+        path         = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
         css_file     = 'tmp.css'
         results_file = 'results'
         results      = nil
 
-        Dir.chdir(tmp_path) do
-          File.open(css_file, 'a') { |f| f.write string }
+        Dir.chdir(path) do
+          File.open(css_file, 'a') { |f| f.write query_params[:text] }
 
           # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
           if system "java -jar css-validator.jar --output=soap12 file:#{css_file} > #{results_file}"
@@ -28,7 +28,10 @@ module Headhunter
           File.delete results_file
         end
 
-        LocalResponse.new(results)
+        # Remove first line with "{vextwarning=false, output=soap12, lang=en, warning=2, medium=all, profile=css3}" and m: and env: tag prefixes
+        clean_results = results.split("\n")[1..-1].join.gsub /(m|env):/, ''
+
+        LocalResponse.new(clean_results)
       end
 
       def self.fetch_file_content(path_to_file)
@@ -91,6 +94,14 @@ module Headhunter
         "#{size} stylesheet is"
       else
         "#{size} stylesheets are"
+      end
+    end
+
+    def process_errors(file, css, response)
+      @messages_per_stylesheet[file] = []
+
+      response.errors.each do |error|
+        @messages_per_stylesheet[file] << "Line #{error[:line]}: #{error[:message]}"
       end
     end
 
