@@ -1,26 +1,6 @@
 require 'net/http'
-require 'rexml/document'
 
 module Headhunter
-  class LocalResponse
-    attr_reader :body
-
-    def initialize(body)
-      @body = body
-      @headers = {'x-w3c-validator-status' => valid?(body)}
-    end
-
-    def [](key)
-      @headers[key]
-    end
-
-    private
-
-    def valid?(body)
-      REXML::Document.new(body).root.each_element('//m:validity') { |e| return e.text == 'true' }
-    end
-  end
-
   class CssValidator
     USE_LOCAL_VALIDATOR = true
 
@@ -82,17 +62,9 @@ module Headhunter
     def process_errors(file, css, response)
       @messages_per_stylesheet[file] = []
 
-      REXML::Document.new(response.body).root.each_element('//m:error') do |e|
-        @messages_per_stylesheet[file] << "Line #{extract_line_from_error(e)}: #{extract_message_from_error(e)}"
+      response.errors.each do |error|
+        @messages_per_stylesheet[file] << "Line #{error[:line]}: #{error[:message]}"
       end
-    end
-
-    def extract_line_from_error(e)
-      e.elements['m:line'].text
-    end
-
-    def extract_message_from_error(e)
-      e.elements['m:message'].get_text.value.strip[0..-2]
     end
 
     def fetch(path) # TODO: Move to Headhunter!
@@ -152,7 +124,10 @@ module Headhunter
         File.delete results_file
       end
 
-      LocalResponse.new(results)
+      # Remove first line with "{vextwarning=false, output=soap12, lang=en, warning=2, medium=all, profile=css3}" and m: and env: tag prefixes
+      clean_results = results.split("\n")[1..-1].join.gsub /(m|env):/, ''
+
+      LocalResponse.new(clean_results)
     end
 
     def encode_multipart_params(boundary, params = {})
