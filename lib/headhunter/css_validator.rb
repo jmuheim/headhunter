@@ -5,7 +5,8 @@ module Headhunter
   class CssValidator
     class Validator
       def self.validate_file(path_to_file)
-        validate_string(fetch_file_content(path_to_file))
+        string = fetch_file_content(path_to_file)
+        validate_string(string)
       end
 
       def self.validate_string(string)
@@ -121,6 +122,10 @@ module Headhunter
       else
         call_remote_validator(query_params)
       end
+    end
+
+    def call_local_validator(query_params)
+      Validator.validate_string query_params[:text]
     end
 
     def response_indicates_valid?(response)
