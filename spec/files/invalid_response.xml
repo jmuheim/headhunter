@@ -18,7 +18,7 @@
                         <m:error>
                             <m:line>1</m:line>
                             <m:errortype>parse-error</m:errortype>
-                            <m:context> asdf321 </m:context>
+                            <m:context> invalid_property </m:context>
                             <m:errorsubtype>
                                 exp
                             </m:errorsubtype>
