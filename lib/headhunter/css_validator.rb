@@ -28,10 +28,7 @@ module Headhunter
           File.delete results_file
         end
 
-        # Remove first line with "{vextwarning=false, output=soap12, lang=en, warning=2, medium=all, profile=css3}" and m: and env: tag prefixes
-        clean_results = results.split("\n")[1..-1].join.gsub /(m|env):/, ''
-
-        LocalResponse.new(clean_results)
+        LocalResponse.new(results)
       end
 
       def self.fetch_file_content(path_to_file)
