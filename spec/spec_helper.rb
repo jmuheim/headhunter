@@ -18,7 +18,10 @@ RSpec.configure do |config|
   config.include Headhunter
 end
 
+def path_to_file(name)
+  File.join(File.dirname(__FILE__), 'files', name)
+end
+
 def read_file(name)
-  filename = File.join(File.dirname(__FILE__), 'files', name)
-  File.read(filename)
+  File.read(path_to_file(name))
 end
