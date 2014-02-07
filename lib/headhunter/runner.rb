@@ -16,7 +16,6 @@ module Headhunter
       @css_hunter     = CssHunter.new(stylesheets)
 
       @css_validator = CssValidator.new(stylesheets)
-      @css_validator.process!
     end
 
     def process!(url, html)
@@ -34,7 +33,7 @@ module Headhunter
       @html_validator.prepare_results_html
 
       @html_validator.report
-      @css_validator.report
+      puts @css_validator.statistics + "\n\n"
       @css_hunter.report
     end
 
