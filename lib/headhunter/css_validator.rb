@@ -4,7 +4,7 @@ require 'net/http'
 module Headhunter
   class CssValidator
     class Validator
-      TMP_CSS_FILE = 'tmp.css'
+      TMP_CSS_FILE = 'tmp.css' # Would be nice to not need to save it to a temp file, see http://stackoverflow.com/questions/21637207/
 
       def self.validate_file(path_to_file)
         string = fetch_file_content(path_to_file)
