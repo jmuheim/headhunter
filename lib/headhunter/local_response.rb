@@ -27,7 +27,7 @@ module Headhunter
     end
 
     def file
-      @document.css('errorlist uri').text
+      @document.css('cssvalidationresponse > uri').text
     end
 
     private

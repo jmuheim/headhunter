@@ -65,4 +65,12 @@ describe Headhunter::LocalResponse do
       expect(subject.send :sanitize_prefixed_tags_from, string).to eq "<errors><pipapo><bla>Bla!</bla</pipapo</errors>"
     end
   end
+
+  describe '#file' do
+    subject { Headhunter::LocalResponse.new(read_file('valid_response.xml')) }
+
+    it "returns the validated file's path" do
+      expect(subject.send :file).to eq 'file:tmp.css'
+    end
+  end
 end
