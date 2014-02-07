@@ -29,4 +29,20 @@ describe Headhunter::CssValidator do
       expect(subject.send(:extract_filename, filename)).to eq 'some-file.css'
     end
   end
+
+  describe '#x_stylesheets_be' do
+    subject { described_class.new }
+
+    it "creates a grammatically correct sentence when there is no stylesheet" do
+      expect(subject.send(:x_stylesheets_be, 0)).to eq '0 stylesheet is'
+    end
+
+    it "creates a grammatically correct sentence when there is only one stylesheet" do
+      expect(subject.send(:x_stylesheets_be, 1)).to eq '1 stylesheet is'
+    end
+
+    it "creates a grammatically correct sentence when there is more than one stylesheet" do
+      expect(subject.send(:x_stylesheets_be, 2)).to eq '2 stylesheets are'
+    end
+  end
 end
