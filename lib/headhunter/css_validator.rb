@@ -24,36 +24,26 @@ module Headhunter
       @profile     = profile     # TODO!
       @vextwarning = vextwarning # TODO!
 
-      @messages_per_stylesheet = {}
+      @invalid_responses = {}
     end
 
     def process!
-      @stylesheets.each do |stylesheet|
-        response = validate(stylesheet)
-
-        unless response.valid?
-          process_errors(response)
-        end
-      end
-    end
-
-    def process_errors(response)
-      @messages_per_stylesheet[response.file] = []
-
-      response.errors.each do |error|
-        @messages_per_stylesheet[response.file] << "Line #{error[:line]}: #{error[:message]}"
-      end
+      @invalid_responses = @stylesheets.map do |stylesheet|
+                             validate(stylesheet)
+                           end
     end
 
     def report
       puts "Validated #{@stylesheets.size} stylesheets.".yellow
-      puts "#{x_stylesheets_be(@stylesheets.size - @messages_per_stylesheet.size)} valid.".green if @messages_per_stylesheet.size < @stylesheets.size
-      puts "#{x_stylesheets_be(@messages_per_stylesheet.size)} invalid.".red if @messages_per_stylesheet.size > 0
+      puts "#{x_stylesheets_be(@stylesheets.size - @invalid_responses.size)} valid.".green if @invalid_responses.size < @stylesheets.size
+      puts "#{x_stylesheets_be(@invalid_responses.size)} invalid.".red if @invalid_responses.size > 0
 
-      @messages_per_stylesheet.each_pair do |stylesheet, messages|
-        puts "  #{extract_filename(stylesheet)}:".red
+      @invalid_responses.each do |response|
+        puts "  #{extract_filename(response.file)}:".red
 
-        messages.each { |message| puts "  - #{message}".red }
+        response.errors.each do |error|
+          puts "    - Line #{error[:line]}: #{error[:message]}".red
+        end
       end
 
       puts
