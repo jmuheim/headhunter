@@ -58,7 +58,7 @@ module Headhunter
     end
 
     def stylesheets
-      Dir["#{ASSETS_PATH}/*.css"]
+      Dir["#{::Rails.root}/#{ASSETS_PATH}/*.css"]
     end
   end
 end

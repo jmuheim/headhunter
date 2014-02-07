@@ -3,60 +3,45 @@ require 'net/http'
 
 module Headhunter
   class CssValidator
-    class Validator
-      TMP_CSS_FILE = 'tmp.css' # Would be nice to not need to save it to a temp file, see http://stackoverflow.com/questions/21637207/
+    def validate(file)
+      results = nil # Needed?
 
-      def self.validate_file(path_to_file)
-        string = fetch_file_content(path_to_file)
-        validate_string(string)
-      end
-
-      def self.validate_string(string)
-        get_local_validator_response(string)
-      end
-
-      def self.get_local_validator_response(string)
-        results = nil # Needed?
-
-        Dir.chdir(Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/') do
-          File.open(TMP_CSS_FILE, 'a') { |f| f.write string }
-
-          # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
-          # More config options see http://jigsaw.w3.org/css-validator/manual.html
-          results = `java -jar css-validator.jar --output=soap12 file:#{TMP_CSS_FILE}`
-
-          File.delete TMP_CSS_FILE
+      Dir.chdir(Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/') do
+        # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
+        # More config options see http://jigsaw.w3.org/css-validator/manual.html
+        if File.exists?(file)
+          results = `java -jar css-validator.jar --output=soap12 file:#{file}`
+        else
+          raise "Couldn't locate file #{file}"
         end
-
-        LocalResponse.new(results)
       end
 
-      def self.fetch_file_content(path_to_file)
-        IO.read(path_to_file)
-      end
+      LocalResponse.new(results)
     end
 
-    USE_LOCAL_VALIDATOR = true
-
-    def initialize(stylesheets = [])
-      @profile = 'css3' # TODO: Option for profile css1 and css21
+    def initialize(stylesheets = [], profile = 'css3', vextwarning = true)
       @stylesheets = stylesheets
-      @messages_per_stylesheet = {}
-    end
+      @profile     = profile     # TODO!
+      @vextwarning = vextwarning # TODO!
 
-    def add_stylesheet(stylesheet)
-      @stylesheets << stylesheet
+      @messages_per_stylesheet = {}
     end
 
     def process!
       @stylesheets.each do |stylesheet|
-        css = fetch(stylesheet)
-        css = ' ' if css.empty? # The validator returns a 500 error if it receives an empty string
+        response = validate(stylesheet)
 
-        response = get_validation_response({text: css, profile: @profile, vextwarning: 'true'})
-        unless response_indicates_valid?(response)
-          process_errors(stylesheet, css, response)
+        unless response.valid?
+          process_errors(response)
         end
+      end
+    end
+
+    def process_errors(response)
+      @messages_per_stylesheet[response.file] = []
+
+      response.errors.each do |error|
+        @messages_per_stylesheet[response.file] << "Line #{error[:line]}: #{error[:message]}"
       end
     end
 
@@ -76,9 +61,9 @@ module Headhunter
 
     private
 
-    # Converts a path like public/assets/application-d205d6f344d8623ca0323cb6f6bd7ca1.css to application.css
+    # Converts a path like #{Rails.root}/public/assets/application-d205d6f344d8623ca0323cb6f6bd7ca1.css to application.css
     def extract_filename(path)
-      if matches = path.match(/^public\/assets\/(.*)-?([a-z0-9]*)(\.css)/)
+      if matches = path.match(/public\/assets\/([a-z\-_]*)-([a-z0-9]*)(\.css)$/)
         matches[1] + matches[3]
       else
         raise "Unexpected path: #{path}"
@@ -91,90 +76,6 @@ module Headhunter
       else
         "#{size} stylesheets are"
       end
-    end
-
-    def process_errors(file, css, response)
-      @messages_per_stylesheet[file] = []
-
-      response.errors.each do |error|
-        @messages_per_stylesheet[file] << "Line #{error[:line]}: #{error[:message]}"
-      end
-    end
-
-    def fetch(path) # TODO: Move to Headhunter!
-      loc = path
-
-      begin
-        open(loc).read
-      rescue Errno::ENOENT
-        raise FetchError.new("#{loc} was not found")
-      rescue OpenURI::HTTPError => e
-        raise FetchError.new("retrieving #{loc} raised an HTTP error: #{e.message}")
-      end
-    end
-
-    def get_validation_response(query_params)
-      query_params.merge!({:output => 'soap12'})
-
-      if USE_LOCAL_VALIDATOR
-        call_local_validator(query_params)
-      else
-        call_remote_validator(query_params)
-      end
-    end
-
-    def call_local_validator(query_params)
-      Validator.validate_string query_params[:text]
-    end
-
-    def response_indicates_valid?(response)
-      response['x-w3c-validator-status'] == 'Valid'
-    end
-
-    def call_remote_validator(query_params = {})
-      boundary = Digest::MD5.hexdigest(Time.now.to_s)
-      data = encode_multipart_params(boundary, query_params)
-      response = http_start(validator_host).post2(validator_path,
-                                                  data,
-                                                  'Content-type' => "multipart/form-data; boundary=#{boundary}")
-
-      raise "HTTP error: #{response.code}" unless response.is_a? Net::HTTPSuccess
-      response
-    end
-
-    def encode_multipart_params(boundary, params = {})
-      ret = ''
-      params.each do |k,v|
-        unless v.empty?
-          ret << "\r\n--#{boundary}\r\n"
-          ret << "Content-Disposition: form-data; name=\"#{k.to_s}\"\r\n\r\n"
-          ret << v
-        end
-      end
-      ret << "\r\n--#{boundary}--\r\n"
-      ret
-    end
-
-    def http_start(host)
-      if ENV['http_proxy']
-        uri = URI.parse(ENV['http_proxy'])
-        proxy_user, proxy_pass = uri.userinfo.split(/:/) if uri.userinfo
-        Net::HTTP.start(host, nil, uri.host, uri.port, proxy_user, proxy_pass)
-      else
-        Net::HTTP.start(host)
-      end
-    end
-
-    def validator_host
-      'jigsaw.w3.org'
-    end
-
-    def validator_path
-      '/css-validator/validator'
-    end
-
-    def error_line_prefix
-      'Invalid css'
     end
   end
 end

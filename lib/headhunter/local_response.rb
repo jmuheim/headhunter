@@ -3,10 +3,7 @@ require 'nokogiri/xml'
 module Headhunter
   class LocalResponse
     def initialize(response = nil)
-      if response
-        @document = Nokogiri::XML(convert_soap_to_xml(response))
-        @headers = {'x-w3c-validator-status' => valid?}
-      end
+      @document = Nokogiri::XML(convert_soap_to_xml(response)) if response
     end
 
     def [](key)
@@ -19,14 +16,18 @@ module Headhunter
 
     def errors
       @document.css('errors error').map do |error|
-        { line: error.css('line').text.strip.to_i,
-          errortype: error.css('errortype').text.strip,
-          context: error.css('context').text.strip,
-          errorsubtype: error.css('errorsubtype').text.strip,
+        { line:          error.css('line').text.strip.to_i,
+          errortype:     error.css('errortype').text.strip,
+          context:       error.css('context').text.strip,
+          errorsubtype:  error.css('errorsubtype').text.strip,
           skippedstring: error.css('skippedstring').text.strip,
-          message: error.css('message').text.strip[0..-3]
+          message:       error.css('message').text.strip[0..-3]
         }
       end
+    end
+
+    def file
+      @document.css('errorlist uri').text
     end
 
     private
