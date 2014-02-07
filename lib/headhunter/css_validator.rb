@@ -4,6 +4,8 @@ require 'net/http'
 module Headhunter
   class CssValidator
     class Validator
+      TMP_CSS_FILE = 'tmp.css'
+
       def self.validate_file(path_to_file)
         string = fetch_file_content(path_to_file)
         validate_string(string)
@@ -14,24 +16,16 @@ module Headhunter
       end
 
       def self.get_local_validator_response(string)
-        path         = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
-        css_file     = 'tmp.css'
-        results_file = 'results'
-        results      = nil
+        results = nil # Needed?
 
-        Dir.chdir(path) do
-          File.open(css_file, 'a') { |f| f.write string }
+        Dir.chdir(Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/') do
+          File.open(TMP_CSS_FILE, 'a') { |f| f.write string }
 
           # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
           # More config options see http://jigsaw.w3.org/css-validator/manual.html
-          if system "java -jar css-validator.jar --output=soap12 file:#{css_file} > #{results_file}"
-            results = IO.read results_file
-          else
-            raise 'Could not execute local validation!'
-          end
+          results = `java -jar css-validator.jar --output=soap12 file:#{TMP_CSS_FILE}`
 
-          File.delete css_file
-          File.delete results_file
+          File.delete TMP_CSS_FILE
         end
 
         LocalResponse.new(results)
