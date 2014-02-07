@@ -10,6 +10,10 @@ module Headhunter
       end
 
       def self.validate_string(string)
+        get_local_validator_response(string)
+      end
+
+      def self.get_local_validator_response(string)
         path         = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
         css_file     = 'tmp.css'
         results_file = 'results'

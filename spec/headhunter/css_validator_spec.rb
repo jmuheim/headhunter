@@ -19,11 +19,21 @@ describe Headhunter::CssValidator::Validator do
     end
   end
 
+  describe '.get_local_validator_response' do
+    subject { described_class.validate_string(read_file('invalid_response.xml')) }
+
+    it 'returns a local response when calling the validator succeeds' do
+      expect(subject).to be_a Headhunter::LocalResponse
+    end
+
+    it 'throws an exception when calling the validator fails'
+  end
+
   describe '.fetch_file_content' do
     subject { described_class.fetch_file_content(path_to_file('invalid_response.xml')) }
 
     it 'returns the contents of a file at a specified path' do
-      expect(subject).to start_with '{vextwarning=false, output=soap12, lang=en, warning=2, medium=all, profile=css3}'
+      expect(subject).to start_with '{vextwarning=false'
     end
   end
 end
