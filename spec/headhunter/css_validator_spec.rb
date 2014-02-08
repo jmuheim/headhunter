@@ -64,10 +64,19 @@ describe Headhunter::CssValidator do
   end
 
   describe '#initialize' do
+    context 'for no CSS' do
+      subject { described_class.new }
+
+      it 'executes validation' do
+        expect(subject.valid_responses.size).to eq 0
+        expect(subject.invalid_responses.size).to eq 0
+      end
+    end
+
     context 'for valid CSS' do
       subject { described_class.new([path_to_file('valid.css')]) }
 
-      it "executes validation" do
+      it 'executes validation' do
         expect(subject.valid_responses.size).to eq 1
         expect(subject.invalid_responses.size).to eq 0
       end
@@ -76,7 +85,7 @@ describe Headhunter::CssValidator do
     context 'for invalid CSS' do
       subject { described_class.new([path_to_file('invalid.css')]) }
 
-      it "executes validation" do
+      it 'executes validation' do
         expect(subject.invalid_responses.size).to eq 1
         expect(subject.valid_responses.size).to eq 0
       end
