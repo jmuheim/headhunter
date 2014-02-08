@@ -47,7 +47,7 @@ describe Headhunter::CssValidator do
 
       it "returns a text with nice statistics" do
         expect(subject).to match 'Validated 1 stylesheet.'
-        expect(subject).to match '1 stylesheet is valid.'
+        expect(subject).to match 'All stylesheets are valid.'
       end
     end
 

@@ -9,7 +9,8 @@ module Headhunter
     end
 
     def validate(url, html)
-      @responses << PageValidations::HTMLValidation.new.validation(html, random_name)
+      @responses << PageValidations::HTMLValidation.new.validation(html, url)
+      @responses.last
     end
 
     def valid_responses
@@ -38,18 +39,12 @@ module Headhunter
       lines.join("\n")
     end
 
-    private
-
     def x_pages_be(size)
       if size <= 1
         "#{size} page is"
       else
         "#{size} pages are"
       end
-    end
-
-    def random_name
-      (0...8).map { (65 + rand(26)).chr }.join
     end
   end
 end
