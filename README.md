@@ -63,6 +63,7 @@ You need a **Java Runtime Environment** to run CSS validation. This should norma
 - Look out for multiple used IDs on the same page and raise error!
 - Look out for invalid tags and raise error (tidy doesn't seem to do this?!)!
 - Cache HTML validations: use MD5 to prevent validating the same source again and again! (Maybe even keep the cache between running specs!)
+- Add option to CssHunter that ignores "bare" rules like applet, blockquote, etc. (which usually stem from libraries like Compass reset or Normalize)
 
 ## Disclaimer
 

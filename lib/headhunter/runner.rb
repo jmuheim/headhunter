@@ -31,10 +31,11 @@ module Headhunter
 
     def report
       puts [ @html_validator.statistics,
-             @css_validator.statistics
+             @css_validator.statistics,
+             @css_hunter.statistics
            ].join "\n\n"
 
-      @css_hunter.report
+     puts
     end
 
     private

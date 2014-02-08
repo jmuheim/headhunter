@@ -1,6 +1,5 @@
 require 'css_parser'
 require 'nokogiri'
-require 'open-uri'
 
 module Headhunter
   class CssHunter
@@ -13,7 +12,7 @@ module Headhunter
       @used_selectors   = []
       @error_selectors  = []
 
-      load_css!
+      load_css
     end
 
     def process!(url, html)
@@ -23,12 +22,15 @@ module Headhunter
       end
     end
 
-    def report
-      puts "Found #{@used_selectors.size + @unused_selectors.size + @error_selectors.size} CSS selectors.".yellow
-      puts "#{@used_selectors.size} selectors are in use.".green if @used_selectors.size > 0
-      puts "#{@unused_selectors.size} selectors are not in use: #{@unused_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
-      puts "#{@error_selectors.size} selectors could not be parsed: #{@error_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
-      puts
+    def statistics
+      lines = []
+
+      lines << "Found #{used_selectors.size + unused_selectors.size + error_selectors.size} CSS selectors.".yellow
+      lines << 'All selectors are in use.'.green if unused_selectors.size + error_selectors.size == 0
+      lines << "#{unused_selectors.size} selectors are not in use: #{unused_selectors.sort.join(', ').red}".red if unused_selectors.size > 0
+      lines << "#{error_selectors.size} selectors could not be parsed: #{error_selectors.sort.join(', ').red}".red if error_selectors.size > 0
+
+      lines.join("\n")
     end
 
     private
@@ -46,25 +48,13 @@ module Headhunter
       end.compact # FIXME: Why is compact needed?
     end
 
-    def load_css!
+    def load_css
       @stylesheets.each do |stylesheet|
-        new_selector_count = add_css!(fetch(stylesheet))
+        add_css_selectors_from(IO.read(stylesheet))
       end
     end
 
-    def fetch(path)
-      loc = path
-
-      begin
-        open(loc).read
-      rescue Errno::ENOENT
-        raise FetchError.new("#{loc} was not found")
-      rescue OpenURI::HTTPError => e
-        raise FetchError.new("retrieving #{loc} raised an HTTP error: #{e.message}")
-      end
-    end
-
-    def add_css!(css)
+    def add_css_selectors_from(css)
       parser = CssParser::Parser.new
       parser.add_block!(css)
 
