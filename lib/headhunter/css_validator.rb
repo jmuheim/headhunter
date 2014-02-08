@@ -41,7 +41,7 @@ module Headhunter
       lines = []
 
       lines << "Validated #{responses.size} stylesheets.".yellow
-      lines << "#{x_stylesheets_be(valid_responses.size)} valid.".green if valid_responses.size > 0
+      lines << "All stylesheets are valid.".green if invalid_responses.size == 0
       lines << "#{x_stylesheets_be(invalid_responses.size)} invalid.".red if invalid_responses.size > 0
 
       invalid_responses.each do |response|

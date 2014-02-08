@@ -24,14 +24,14 @@ module Headhunter
       lines = []
 
       lines << "Validated #{responses.size} pages.".yellow
-      lines << "#{x_pages_be(valid_responses.size)} valid.".green if valid_responses.size > 0
+      lines << "All pages are valid.".green if invalid_responses.size == 0
       lines << "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.size > 0
 
       invalid_responses.each do |response|
-        lines << "  #{extract_filename(response.uri)}:".red
+        lines << "  #{response.resource}:".red
       
-        response.exceptions.each do |exception|
-          lines << "    - #{exception.to_s}".red
+        ([response.exceptions].flatten).each do |exception|
+          lines << "    - #{exception.strip}".red
         end
       end
 
