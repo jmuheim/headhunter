@@ -27,14 +27,13 @@ module Headhunter
       lines << "#{x_pages_be(valid_responses.size)} valid.".green if valid_responses.size > 0
       lines << "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.size > 0
 
-      # invalid_responses.each do |response|
-      #   binding.pry
-      #   lines << "  #{extract_filename(response.uri)}:".red
-      # 
-      #   response.exceptions.each do |exception|
-      #     lines << "    - Line #{exception[:line]}: #{exception[:message]}.".red
-      #   end
-      # end
+      invalid_responses.each do |response|
+        lines << "  #{extract_filename(response.uri)}:".red
+      
+        response.exceptions.each do |exception|
+          lines << "    - #{exception.to_s}".red
+        end
+      end
 
       lines.join("\n")
     end

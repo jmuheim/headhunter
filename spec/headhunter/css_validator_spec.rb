@@ -138,14 +138,9 @@ describe Headhunter::CssValidator::Response do
     context 'invalid response' do
       subject { described_class.new(read_file('invalid_response.xml')) }
 
-      it 'returns an array of error hashes' do
-        expect(subject.errors).to eq [{line: 1,
-                                       errortype: 'parse-error',
-                                       context: 'invalid_property',
-                                       errorsubtype: 'exp',
-                                       skippedstring: '123',
-                                       message: "Property bla doesn't exist"
-                                     }]
+      it 'returns an array of errors' do
+        expect(subject.errors.size).to eq 1
+        expect(subject.errors.first).to be_a Headhunter::CssValidator::Response::Error
       end
     end
   end
@@ -182,6 +177,18 @@ describe Headhunter::CssValidator::Response do
 
     it "returns the validated uri's path" do
       expect(subject.send :uri).to eq 'file:tmp.css'
+    end
+  end
+end
+
+describe Headhunter::CssValidator::Response::Error do
+  describe '#initialize' do
+    subject { described_class.new(123, "Attribute xyz doesn't exist", context: 'something', anything_else: 'bla') }
+
+    it 'assigns the passed params correctly' do
+      expect(subject.line).to eq 123
+      expect(subject.message).to eq "Attribute xyz doesn't exist"
+      expect(subject.details).to eq context: 'something', anything_else: 'bla'
     end
   end
 end

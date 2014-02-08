@@ -48,7 +48,7 @@ module Headhunter
         lines << "  #{extract_filename(response.uri)}:".red
 
         response.errors.each do |error|
-          lines << "    - Line #{error[:line]}: #{error[:message]}.".red
+          lines << "    - #{error.to_s}}.".red
         end
       end
 
@@ -86,13 +86,13 @@ module Headhunter
 
       def errors
         @document.css('errors error').map do |error|
-          { line:          error.css('line').text.strip.to_i,
-            errortype:     error.css('errortype').text.strip,
-            context:       error.css('context').text.strip,
-            errorsubtype:  error.css('errorsubtype').text.strip,
-            skippedstring: error.css('skippedstring').text.strip,
-            message:       error.css('message').text.strip[0..-3]
-          }
+          Error.new( error.css('line').text.strip.to_i,
+                     error.css('message').text.strip[0..-3],
+                     errortype: error.css('errortype').text.strip,
+                     context: error.css('context').text.strip,
+                     errorsubtype: error.css('errorsubtype').text.strip,
+                     skippedstring: error.css('skippedstring').text.strip
+                   )
         end
       end
 
@@ -122,6 +122,20 @@ module Headhunter
       # We simply remove the `m:` and `env:` prefixes from the source, so e.g. `<env:body>` becomes `<body>`.
       def sanitize_prefixed_tags_from(soap)
         soap.gsub /(m|env):/, ''
+      end
+
+      class Error
+        attr_reader :line, :message, :details
+
+        def initialize(line, message, details = {})
+          @line    = line
+          @message = message
+          @details = details
+        end
+
+        def to_s
+          "Line #{@line}: #{@message}."
+        end
       end
     end
   end
