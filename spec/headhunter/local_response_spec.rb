@@ -66,11 +66,11 @@ describe Headhunter::LocalResponse do
     end
   end
 
-  describe '#file' do
+  describe '#uri' do
     subject { Headhunter::LocalResponse.new(read_file('valid_response.xml')) }
 
-    it "returns the validated file's path" do
-      expect(subject.send :file).to eq 'file:tmp.css'
+    it "returns the validated uri's path" do
+      expect(subject.send :uri).to eq 'file:tmp.css'
     end
   end
 end

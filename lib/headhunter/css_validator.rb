@@ -5,7 +5,7 @@ module Headhunter
   class CssValidator
     VALIDATOR_PATH = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
 
-    attr_reader :stylesheets
+    attr_reader :stylesheets, :responses
 
     def initialize(stylesheets = [], profile = 'css3', vextwarning = true)
       @stylesheets = stylesheets
@@ -17,13 +17,13 @@ module Headhunter
                    end
     end
 
-    def validate(file)
+    def validate(uri)
       # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
       # More config options see http://jigsaw.w3.org/css-validator/manual.html
-      results = if File.exists?(file)
-                  Dir.chdir(VALIDATOR_PATH) { `java -jar css-validator.jar --output=soap12 file:#{file}` }
+      results = if File.exists?(uri)
+                  Dir.chdir(VALIDATOR_PATH) { `java -jar css-validator.jar --output=soap12 file:#{uri}` }
                 else
-                  raise "Couldn't locate file #{file}"
+                  raise "Couldn't locate uri #{uri}"
                 end
 
       LocalResponse.new(results)
@@ -40,12 +40,12 @@ module Headhunter
     def statistics
       lines = []
 
-      lines << "Validated #{stylesheets.size} stylesheets.".yellow
-      lines << "#{x_stylesheets_be(stylesheets.size - invalid_responses.size)} valid.".green if valid_responses.size > 0
+      lines << "Validated #{responses.size} stylesheets.".yellow
+      lines << "#{x_stylesheets_be(valid_responses.size)} valid.".green if valid_responses.size > 0
       lines << "#{x_stylesheets_be(invalid_responses.size)} invalid.".red if invalid_responses.size > 0
 
       invalid_responses.each do |response|
-        lines << "  #{extract_filename(response.file)}:".red
+        lines << "  #{extract_filename(response.uri)}:".red
 
         response.errors.each do |error|
           lines << "    - Line #{error[:line]}: #{error[:message]}.".red

@@ -2,43 +2,41 @@ require 'html_validation'
 
 module Headhunter
   class HtmlValidator
+    attr_reader :responses
+
     def initialize
-      @valid_results   = []
-      @invalid_results = []
+      @responses = []
     end
 
-    def process!(url, html)
-      html_validation = PageValidations::HTMLValidation.new.validation(html, random_name)
-      (html_validation.valid? ? @valid_results : @invalid_results) << html_validation
+    def validate(url, html)
+      @responses << PageValidations::HTMLValidation.new.validation(html, random_name)
     end
 
-    def prepare_results_html
-      html = File.read File.dirname(File.expand_path(__FILE__)) + '/templates/results.html'
-      html.gsub! '{{VALID_RESULTS}}', prepare_results_for(@valid_results)
-      html.gsub! '{{INVALID_RESULTS}}', prepare_results_for(@invalid_results)
-      File.open('.validation/results.html', 'w') { |file| file.write(html) }
+    def valid_responses
+      @responses.select(&:valid?)
     end
 
-    def prepare_results_for(results)
-      results.map do |result|
-        exceptions_html = ::Rack::Utils.escape_html(File.read(".validation/#{result.resource}.exceptions.txt"))
-
-        full_result_html = File.read File.dirname(File.expand_path(__FILE__)) + '/templates/result.html'
-        full_result_html.gsub! '{{RESOURCE}}', result.resource
-        full_result_html.gsub! '{{EXCEPTIONS}}', exceptions_html
-        full_result_html.gsub! '{{HTML_CONTEXT}}', 'context'
-        full_result_html.gsub! '{{LINK}}', "#{result.resource}.html.txt"
-
-        full_result_html
-      end.join
+    def invalid_responses
+      @responses.reject(&:valid?)
     end
 
-    def report
-      puts "Validated #{@valid_results.size + @invalid_results.size} HTML pages.".yellow
-      puts "#{x_pages_be(@valid_results.size)} valid.".green if @valid_results.size > 0
-      puts "#{x_pages_be(@invalid_results.size)} invalid.".red if @invalid_results.size > 0
-      puts 'Open .validation/results.html to view full results.'
-      puts
+    def statistics
+      lines = []
+
+      lines << "Validated #{responses.size} pages.".yellow
+      lines << "#{x_pages_be(valid_responses.size)} valid.".green if valid_responses.size > 0
+      lines << "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.size > 0
+
+      # invalid_responses.each do |response|
+      #   binding.pry
+      #   lines << "  #{extract_filename(response.uri)}:".red
+      # 
+      #   response.exceptions.each do |exception|
+      #     lines << "    - Line #{exception[:line]}: #{exception[:message]}.".red
+      #   end
+      # end
+
+      lines.join("\n")
     end
 
     private

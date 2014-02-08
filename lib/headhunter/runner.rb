@@ -19,7 +19,7 @@ module Headhunter
     end
 
     def process!(url, html)
-      @html_validator.process!(url, html)
+      @html_validator.validate(url, html)
       @css_hunter.process!(url, html)
     end
 
@@ -30,10 +30,10 @@ module Headhunter
     end
 
     def report
-      @html_validator.prepare_results_html
+      puts [ @html_validator.statistics,
+             @css_validator.statistics
+           ].join "\n\n"
 
-      @html_validator.report
-      puts @css_validator.statistics + "\n\n"
       @css_hunter.report
     end
 

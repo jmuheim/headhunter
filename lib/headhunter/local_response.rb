@@ -26,7 +26,7 @@ module Headhunter
       end
     end
 
-    def file
+    def uri
       @document.css('cssvalidationresponse > uri').text
     end
 
