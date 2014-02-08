@@ -4,7 +4,9 @@ require 'open-uri'
 
 module Headhunter
   class CssHunter
-    def initialize(stylesheets)
+    attr_reader :unused_selectors, :used_selectors, :error_selectors
+
+    def initialize(stylesheets = [])
       @stylesheets      = stylesheets
       @parsed_rules     = {}
       @unused_selectors = []
@@ -15,7 +17,8 @@ module Headhunter
     end
 
     def process!(url, html)
-      analyze(html).each do |selector|
+      detect_used_selectors_in(Nokogiri::HTML(html)).each do |selector|
+        @used_selectors << selector
         @unused_selectors.delete(selector)
       end
     end
@@ -30,25 +33,17 @@ module Headhunter
 
     private
 
-    def analyze(html)
-      doc = Nokogiri::HTML(html)
-
+    def detect_used_selectors_in(document)
       @unused_selectors.collect do |selector, declarations|
-        # We test against the selector stripped of any pseudo classes,
-        # but we report on the selector with its pseudo classes.
-        stripped_selector = strip(selector)
-
-        next if stripped_selector.empty?
+        bare_selector = bare_selector_from(selector)
 
         begin
-          if doc.search(stripped_selector).any?
-            @used_selectors << selector
-            selector
-          end
+          selector if document.search(bare_selector).any?
         rescue Nokogiri::CSS::SyntaxError => e
           @error_selectors << selector
+          @unused_selectors.delete(selector)
         end
-      end
+      end.compact # FIXME: Why is compact needed?
     end
 
     def load_css!
@@ -78,7 +73,7 @@ module Headhunter
       parser.each_selector do |selector, declarations, specificity|
         next if @unused_selectors.include?(selector)
         next if selector =~ @ignore_selectors
-        next if has_pseudo_classes(selector) and @unused_selectors.include?(strip(selector))
+        next if has_pseudo_classes(selector) and @unused_selectors.include?(bare_selector_from(selector))
 
         @unused_selectors << selector
         @parsed_rules[selector] = declarations
@@ -93,10 +88,17 @@ module Headhunter
       selector =~ /::?[\w\-]+/
     end
 
-    def strip(selector)
-      selector = selector.gsub(/^@.*/, '') # @-webkit-keyframes ...
-      selector = selector.gsub(/:.*/, '')  # input#x:nth-child(2):not(#z.o[type='file'])
-      selector
+    def bare_selector_from(selector)
+      selector = remove_at_rules_from(selector)
+      selector = remove_pseudo_classes_from(selector)
+    end
+
+    def remove_at_rules_from(selector)
+      selector.gsub(/^@.*/, '') # @keyframes
+    end
+
+    def remove_pseudo_classes_from(selector)
+      selector.gsub(/:.*/, '')  # input#x:nth-child(2):not(#z.o[type='file'])
     end
   end
 
