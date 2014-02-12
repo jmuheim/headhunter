@@ -29,6 +29,34 @@ describe Headhunter::CssHunter do
                                                        'a:hover', '.clear-float']
     end
   end
+
+  describe '#detect_used_selectors_in' do
+    subject { described_class.new }
+
+    it 'adds selectors' do
+      subject.add_css_selectors_from(read_file('valid.css'))
+
+      expect(subject.detect_used_selectors_in(read_file('valid.html'))).to match_array ['html', 'body', '*']
+    end
+
+    it 'gracefully ignores invalid rules' do
+      pending "Don't know how to do this"
+    end
+  end
+
+  describe '#process' do
+    subject { described_class.new }
+
+    it 'processes given html' do
+      subject.add_css_selectors_from(read_file('valid.css'))
+      subject.process('some-file.html', read_file('valid.html'))
+
+      expect(subject.error_selectors).to eq []
+      expect(subject.used_selectors).to eq ['html', 'body', '*']
+      expect(subject.unused_selectors).to match_array ['ul', 'ul li', '.hidden', 'a img', 'a', 'a:hover',
+                                                       '.clear-float']
+    end
+  end
 end
 
 # require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
