@@ -1,5 +1,9 @@
 require 'headhunter'
 require 'pry'
+require 'colorize'
+# require 'coveralls'
+
+# Coveralls.wear!
 
 $: << File.join(File.dirname(__FILE__), %w(.. lib))
 
@@ -17,7 +21,10 @@ RSpec.configure do |config|
   config.include Headhunter
 end
 
-def get_file(name)
-  filename = File.join(File.dirname(__FILE__), 'files', name)
-  File.read(filename)
+def path_to_file(name)
+  File.join(File.dirname(__FILE__), 'files', name)
+end
+
+def read_file(name)
+  File.read(path_to_file(name))
 end

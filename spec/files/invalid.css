@@ -10,7 +10,7 @@ html, body
 
 * 
 {
-	margin:0;
+	margin:0
 	padding:0;
 }
 ul, ul li
@@ -20,10 +20,9 @@ ul, ul li
 
 .hidden
 {
-	display: none;
+	display none;
 }
 a img
-{
 	border: none;
 }
 a

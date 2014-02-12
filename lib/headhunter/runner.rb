@@ -16,12 +16,11 @@ module Headhunter
       @css_hunter     = CssHunter.new(stylesheets)
 
       @css_validator = CssValidator.new(stylesheets)
-      @css_validator.process!
     end
 
-    def process!(url, html)
-      @html_validator.process!(url, html)
-      @css_hunter.process!(url, html)
+    def process(url, html)
+      @html_validator.validate(url, html)
+      @css_hunter.process(url, html)
     end
 
     def clean_up!
@@ -31,11 +30,12 @@ module Headhunter
     end
 
     def report
-      @html_validator.prepare_results_html
+      puts [ @html_validator.statistics,
+             @css_validator.statistics,
+             @css_hunter.statistics
+           ].join "\n\n"
 
-      @html_validator.report
-      @css_validator.report
-      @css_hunter.report
+     puts
     end
 
     private
@@ -58,7 +58,7 @@ module Headhunter
     end
 
     def stylesheets
-      Dir["#{ASSETS_PATH}/*.css"]
+      Dir["#{::Rails.root}/#{ASSETS_PATH}/*.css"]
     end
   end
 end

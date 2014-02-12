@@ -1,53 +1,65 @@
 require 'net/http'
+require 'nokogiri/xml'
 
 module Headhunter
   class CssValidator
-    USE_LOCAL_VALIDATOR = true
+    VALIDATOR_PATH = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
 
-    def initialize(stylesheets = [])
-      @profile = 'css3' # TODO: Option for profile css1 and css21
+    attr_reader :stylesheets, :responses
+
+    def initialize(stylesheets = [], profile = 'css3', vextwarning = true)
       @stylesheets = stylesheets
-      @messages_per_stylesheet = {}
+      @profile     = profile     # TODO!
+      @vextwarning = vextwarning # TODO!
+
+      @responses = @stylesheets.map do |stylesheet|
+                     validate(stylesheet)
+                   end
     end
 
-    def add_stylesheet(stylesheet)
-      @stylesheets << stylesheet
+    def validate(uri)
+      # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
+      # More config options see http://jigsaw.w3.org/css-validator/manual.html
+      results = if File.exists?(uri)
+                  Dir.chdir(VALIDATOR_PATH) { `java -jar css-validator.jar --output=soap12 file:#{uri}` }
+                else
+                  raise "Couldn't locate uri #{uri}"
+                end
+
+      Response.new(results)
     end
 
-    def process!
-      @stylesheets.each do |stylesheet|
-        css = fetch(stylesheet)
-        css = ' ' if css.empty? # The validator returns a 500 error if it receives an empty string
+    def valid_responses
+      @responses.select(&:valid?)
+    end
 
-        response = get_validation_response({text: css, profile: @profile, vextwarning: 'true'})
-        unless response_indicates_valid?(response)
-          process_errors(stylesheet, css, response)
+    def invalid_responses
+      @responses.reject(&:valid?)
+    end
+
+    def statistics
+      lines = []
+
+      lines << "Validated #{responses.size} stylesheets.".yellow
+      lines << "All stylesheets are valid.".green if invalid_responses.size == 0
+      lines << "#{x_stylesheets_be(invalid_responses.size)} invalid.".red if invalid_responses.size > 0
+
+      invalid_responses.each do |response|
+        lines << "  #{extract_filename(response.uri)}:".red
+
+        response.errors.each do |error|
+          lines << "    - #{error.to_s}".red
         end
       end
+
+      lines.join("\n")
     end
 
-    def report
-      puts "Validated #{@stylesheets.size} stylesheets.".yellow
-      puts "#{x_stylesheets_be(@stylesheets.size - @messages_per_stylesheet.size)} valid.".green if @messages_per_stylesheet.size < @stylesheets.size
-      puts "#{x_stylesheets_be(@messages_per_stylesheet.size)} invalid.".red if @messages_per_stylesheet.size > 0
-
-      @messages_per_stylesheet.each_pair do |stylesheet, messages|
-        puts "  #{extract_filename(stylesheet)}:".red
-
-        messages.each { |message| puts "  - #{message}".red }
-      end
-
-      puts
-    end
-
-    private
-
-    # Converts a path like public/assets/application-d205d6f344d8623ca0323cb6f6bd7ca1.css to application.css
     def extract_filename(path)
-      if matches = path.match(/^public\/assets\/(.*)-?([a-z0-9]*)(\.css)/)
-        matches[1] + matches[3]
+      if matches = path.match(/public\/assets\/([a-z\-_]*)-([a-z0-9]{32})(\.css)$/)
+        matches[1] + matches[3] # application-d205d6f344d8623ca0323cb6f6bd7ca1.css becomes application.css
       else
-        raise "Unexpected path: #{path}"
+        File.basename(path)
       end
     end
 
@@ -59,110 +71,72 @@ module Headhunter
       end
     end
 
-    def process_errors(file, css, response)
-      @messages_per_stylesheet[file] = []
-
-      response.errors.each do |error|
-        @messages_per_stylesheet[file] << "Line #{error[:line]}: #{error[:message]}"
-      end
-    end
-
-    def fetch(path) # TODO: Move to Headhunter!
-      loc = path
-
-      begin
-        open(loc).read
-      rescue Errno::ENOENT
-        raise FetchError.new("#{loc} was not found")
-      rescue OpenURI::HTTPError => e
-        raise FetchError.new("retrieving #{loc} raised an HTTP error: #{e.message}")
-      end
-    end
-
-    def get_validation_response(query_params)
-      query_params.merge!({:output => 'soap12'})
-
-      if USE_LOCAL_VALIDATOR
-        call_local_validator(query_params)
-      else
-        call_remote_validator(query_params)
-      end
-    end
-
-    def response_indicates_valid?(response)
-      response['x-w3c-validator-status'] == 'Valid'
-    end
-
-    def call_remote_validator(query_params = {})
-      boundary = Digest::MD5.hexdigest(Time.now.to_s)
-      data = encode_multipart_params(boundary, query_params)
-      response = http_start(validator_host).post2(validator_path,
-                                                  data,
-                                                  'Content-type' => "multipart/form-data; boundary=#{boundary}")
-
-      raise "HTTP error: #{response.code}" unless response.is_a? Net::HTTPSuccess
-      response
-    end
-
-    def call_local_validator(query_params)
-      path         = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
-      css_file     = 'tmp.css'
-      results_file = 'results'
-      results      = nil
-
-      Dir.chdir(path) do
-        File.open(css_file, 'a') { |f| f.write query_params[:text] }
-
-        # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
-        if system "java -jar css-validator.jar --output=soap12 file:#{css_file} > #{results_file}"
-          results = IO.read results_file
-        else
-          raise 'Could not execute local validation!'
-        end
-
-        File.delete css_file
-        File.delete results_file
+    class Response
+      def initialize(response = nil)
+        @document = Nokogiri::XML(convert_soap_to_xml(response)) if response
       end
 
-      # Remove first line with "{vextwarning=false, output=soap12, lang=en, warning=2, medium=all, profile=css3}" and m: and env: tag prefixes
-      clean_results = results.split("\n")[1..-1].join.gsub /(m|env):/, ''
+      def [](key)
+        @headers[key]
+      end
 
-      LocalResponse.new(clean_results)
-    end
+      def valid?
+        @document.css('validity').text == 'true'
+      end
 
-    def encode_multipart_params(boundary, params = {})
-      ret = ''
-      params.each do |k,v|
-        unless v.empty?
-          ret << "\r\n--#{boundary}\r\n"
-          ret << "Content-Disposition: form-data; name=\"#{k.to_s}\"\r\n\r\n"
-          ret << v
+      def errors
+        @document.css('errors error').map do |error|
+          Error.new( error.css('line').text.strip.to_i,
+                     error.css('message').text.strip[0..-3],
+                     errortype: error.css('errortype').text.strip,
+                     context: error.css('context').text.strip,
+                     errorsubtype: error.css('errorsubtype').text.strip,
+                     skippedstring: error.css('skippedstring').text.strip
+                   )
         end
       end
-      ret << "\r\n--#{boundary}--\r\n"
-      ret
-    end
 
-    def http_start(host)
-      if ENV['http_proxy']
-        uri = URI.parse(ENV['http_proxy'])
-        proxy_user, proxy_pass = uri.userinfo.split(/:/) if uri.userinfo
-        Net::HTTP.start(host, nil, uri.host, uri.port, proxy_user, proxy_pass)
-      else
-        Net::HTTP.start(host)
+      def uri
+        @document.css('cssvalidationresponse > uri').text
       end
-    end
 
-    def validator_host
-      'jigsaw.w3.org'
-    end
+      private
 
-    def validator_path
-      '/css-validator/validator'
-    end
+      def convert_soap_to_xml(soap)
+        sanitize_prefixed_tags_from(
+          remove_first_line_from(soap)
+        )
+      end
 
-    def error_line_prefix
-      'Invalid css'
+      # The first line of the validator's response contains parameter options like this:
+      #
+      #     {vextwarning=false, output=soap, lang=en, warning=2, medium=all, profile=css3}
+      #
+      # We remove this so Nokogiri can parse the document as XML.
+      def remove_first_line_from(soap)
+        soap.split("\n")[1..-1].join("\n")
+      end
+
+      # The validator's response contains strange SOAP tags like `m:error` or `env:body` which need to be sanitized for Nokogiri.
+      #
+      # We simply remove the `m:` and `env:` prefixes from the source, so e.g. `<env:body>` becomes `<body>`.
+      def sanitize_prefixed_tags_from(soap)
+        soap.gsub /(m|env):/, ''
+      end
+
+      class Error
+        attr_reader :line, :message, :details
+
+        def initialize(line, message, details = {})
+          @line    = line
+          @message = message
+          @details = details
+        end
+
+        def to_s
+          "Line #{@line}: #{@message}."
+        end
+      end
     end
   end
 end

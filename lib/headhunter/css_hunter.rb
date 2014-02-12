@@ -1,104 +1,76 @@
 require 'css_parser'
 require 'nokogiri'
-require 'open-uri'
 
 module Headhunter
   class CssHunter
-    def initialize(stylesheets)
+    attr_reader :unused_selectors, :used_selectors, :error_selectors
+
+    def initialize(stylesheets = [])
       @stylesheets      = stylesheets
-      @parsed_rules     = {}
       @unused_selectors = []
       @used_selectors   = []
       @error_selectors  = []
 
-      load_css!
+      @stylesheets.each do |stylesheet|
+        add_css_selectors_from(IO.read(stylesheet))
+      end
     end
 
-    def process!(url, html)
-      analyze(html).each do |selector|
+    def process(html)
+      detect_used_selectors_in(html).each do |selector|
+        @used_selectors << selector
         @unused_selectors.delete(selector)
       end
     end
 
-    def report
-      puts "Found #{@used_selectors.size + @unused_selectors.size + @error_selectors.size} CSS selectors.".yellow
-      puts "#{@used_selectors.size} selectors are in use.".green if @used_selectors.size > 0
-      puts "#{@unused_selectors.size} selectors are not in use: #{@unused_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
-      puts "#{@error_selectors.size} selectors could not be parsed: #{@error_selectors.sort.join(', ').red}".red if @unused_selectors.size > 0
-      puts
+    def statistics
+      lines = []
+
+      lines << "Found #{used_selectors.size + unused_selectors.size + error_selectors.size} CSS selectors.".yellow
+      lines << 'All selectors are in use.'.green if unused_selectors.size + error_selectors.size == 0
+      lines << "#{unused_selectors.size} selectors are not in use: #{unused_selectors.sort.join(', ').red}".red if unused_selectors.size > 0
+      lines << "#{error_selectors.size} selectors could not be parsed: #{error_selectors.sort.join(', ').red}".red if error_selectors.size > 0
+
+      lines.join("\n")
     end
 
-    private
-
-    def analyze(html)
-      doc = Nokogiri::HTML(html)
+    def detect_used_selectors_in(html)
+      document = Nokogiri::HTML(html)
 
       @unused_selectors.collect do |selector, declarations|
-        # We test against the selector stripped of any pseudo classes,
-        # but we report on the selector with its pseudo classes.
-        stripped_selector = strip(selector)
-
-        next if stripped_selector.empty?
+        bare_selector = bare_selector_from(selector)
 
         begin
-          if doc.search(stripped_selector).any?
-            @used_selectors << selector
-            selector
-          end
+          selector if document.search(bare_selector).any?
         rescue Nokogiri::CSS::SyntaxError => e
           @error_selectors << selector
+          @unused_selectors.delete(selector)
         end
-      end
+      end.compact # FIXME: Why is compact needed?
     end
 
-    def load_css!
-      @stylesheets.each do |stylesheet|
-        new_selector_count = add_css!(fetch(stylesheet))
-      end
-    end
-
-    def fetch(path)
-      loc = path
-
-      begin
-        open(loc).read
-      rescue Errno::ENOENT
-        raise FetchError.new("#{loc} was not found")
-      rescue OpenURI::HTTPError => e
-        raise FetchError.new("retrieving #{loc} raised an HTTP error: #{e.message}")
-      end
-    end
-
-    def add_css!(css)
+    def add_css_selectors_from(css)
       parser = CssParser::Parser.new
       parser.add_block!(css)
 
-      selector_count = 0
-
       parser.each_selector do |selector, declarations, specificity|
-        next if @unused_selectors.include?(selector)
-        next if selector =~ @ignore_selectors
-        next if has_pseudo_classes(selector) and @unused_selectors.include?(strip(selector))
-
+        # next if @unused_selectors.include?(selector)
+        # next if has_pseudo_classes?(selector) and @unused_selectors.include?(bare_selector_from(selector))
         @unused_selectors << selector
-        @parsed_rules[selector] = declarations
-
-        selector_count += 1
       end
-
-      selector_count
     end
 
-    def has_pseudo_classes(selector)
-      selector =~ /::?[\w\-]+/
+    # def has_pseudo_classes?(selector)
+    #   selector =~ /::?[\w\-]+/
+    # end
+
+    def bare_selector_from(selector)
+      # Add more clean up stuff here, e.g. stuff like @keyframe (Deadweight implemented this)?
+      remove_pseudo_classes_from(selector)
     end
 
-    def strip(selector)
-      selector = selector.gsub(/^@.*/, '') # @-webkit-keyframes ...
-      selector = selector.gsub(/:.*/, '')  # input#x:nth-child(2):not(#z.o[type='file'])
-      selector
+    def remove_pseudo_classes_from(selector)
+      selector.gsub(/:.*/, '')  # input#x:nth-child(2):not(#z.o[type='file'])
     end
   end
-
-  class FetchError < StandardError; end
 end

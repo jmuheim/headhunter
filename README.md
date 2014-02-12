@@ -6,6 +6,8 @@
 [![Code Climate](https://codeclimate.com/github/jmuheim/headhunter.png)](https://codeclimate.com/github/jmuheim/headhunter)
 [![Travis CI](https://api.travis-ci.org/jmuheim/headhunter.png)](https://travis-ci.org/jmuheim/headhunter)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jmuheim/headhunter/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Dependency Status](https://gemnasium.com/jmuheim/headhunter.png)](https://gemnasium.com/jmuheim/headhunter)
+[![Coverage Status](https://coveralls.io/repos/jmuheim/headhunter/badge.png)](https://coveralls.io/r/jmuheim/headhunter)
 
 Headhunter is an HTML and CSS validation tool that injects itself into your Rails feature tests and auto<strong>magic</strong>ally checks all your generated HTML and CSS for validity.
 
@@ -59,8 +61,11 @@ You need a **Java Runtime Environment** to run CSS validation. This should norma
 - In feature tests, the same views are getting rendered again and again. These same sources shouldn't be validated over and over again!
 - More configuration options needed! CSS1, CSS2, CSS2.1, CSS3! XHTML, HTML5, etc.
 - Better output needed! With context lines, etc.
+  - HTML output: info about GET/POST/PUT/DELETE!
 - Look out for multiple used IDs on the same page and raise error!
 - Look out for invalid tags and raise error (tidy doesn't seem to do this?!)!
+- Cache HTML validations: use MD5 to prevent validating the same source again and again! (Maybe even keep the cache between running specs!)
+- Add option to CssHunter that ignores "bare" rules like applet, blockquote, etc. (which usually stem from libraries like Compass reset or Normalize)
 
 ## Disclaimer
 
