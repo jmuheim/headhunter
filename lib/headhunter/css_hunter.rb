@@ -16,7 +16,7 @@ module Headhunter
       end
     end
 
-    def process(url, html)
+    def process(html)
       detect_used_selectors_in(html).each do |selector|
         @used_selectors << selector
         @unused_selectors.delete(selector)

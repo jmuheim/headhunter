@@ -49,7 +49,7 @@ describe Headhunter::CssHunter do
 
     it 'processes given html' do
       subject.add_css_selectors_from(read_file('valid.css'))
-      subject.process('some-file.html', read_file('valid.html'))
+      subject.process(read_file('valid.html'))
 
       expect(subject.error_selectors).to eq []
       expect(subject.used_selectors).to eq ['html', 'body', '*']
