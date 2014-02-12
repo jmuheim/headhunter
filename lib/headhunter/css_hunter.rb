@@ -53,8 +53,6 @@ module Headhunter
       parser = CssParser::Parser.new
       parser.add_block!(css)
 
-      selector_count = 0
-
       parser.each_selector do |selector, declarations, specificity|
         # next if @unused_selectors.include?(selector)
         # next if has_pseudo_classes?(selector) and @unused_selectors.include?(bare_selector_from(selector))
