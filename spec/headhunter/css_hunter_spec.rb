@@ -21,7 +21,12 @@ describe Headhunter::CssHunter do
     subject { described_class.new }
 
     it 'adds selectors' do
-      expect(subject.add_css_selectors_from(read_file('valid.css'))).to eq 'textarea'
+      subject.add_css_selectors_from(read_file('valid.css'))
+
+      expect(subject.error_selectors).to eq []
+      expect(subject.used_selectors).to eq []
+      expect(subject.unused_selectors).to match_array ['html', 'body', '*', 'ul', 'ul li', '.hidden', 'a img', 'a',
+                                                       'a:hover', '.clear-float']
     end
   end
 end

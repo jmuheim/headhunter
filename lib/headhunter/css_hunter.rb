@@ -7,7 +7,6 @@ module Headhunter
 
     def initialize(stylesheets = [])
       @stylesheets      = stylesheets
-      @parsed_rules     = {}
       @unused_selectors = []
       @used_selectors   = []
       @error_selectors  = []
@@ -59,7 +58,6 @@ module Headhunter
       parser.each_selector do |selector, declarations, specificity|
         # next if @unused_selectors.include?(selector)
         # next if has_pseudo_classes?(selector) and @unused_selectors.include?(bare_selector_from(selector))
-        binding.pry
         @unused_selectors << selector
       end
     end
