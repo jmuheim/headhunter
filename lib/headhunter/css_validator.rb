@@ -48,7 +48,7 @@ module Headhunter
         lines << "  #{extract_filename(response.uri)}:".red
 
         response.errors.each do |error|
-          lines << "    - #{error.to_s}}.".red
+          lines << "    - #{error.to_s}".red
         end
       end
 

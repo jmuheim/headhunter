@@ -18,9 +18,9 @@ module Headhunter
       @css_validator = CssValidator.new(stylesheets)
     end
 
-    def process!(url, html)
+    def process(url, html)
       @html_validator.validate(url, html)
-      @css_hunter.process!(url, html)
+      @css_hunter.process(url, html)
     end
 
     def clean_up!

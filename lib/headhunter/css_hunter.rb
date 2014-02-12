@@ -12,11 +12,13 @@ module Headhunter
       @used_selectors   = []
       @error_selectors  = []
 
-      load_css
+      @stylesheets.each do |stylesheet|
+        add_css_selectors_from(IO.read(stylesheet))
+      end
     end
 
-    def process!(url, html)
-      detect_used_selectors_in(Nokogiri::HTML(html)).each do |selector|
+    def process(url, html)
+      detect_used_selectors_in(html).each do |selector|
         @used_selectors << selector
         @unused_selectors.delete(selector)
       end
@@ -33,9 +35,9 @@ module Headhunter
       lines.join("\n")
     end
 
-    private
+    def detect_used_selectors_in(html)
+      document = Nokogiri::HTML(html)
 
-    def detect_used_selectors_in(document)
       @unused_selectors.collect do |selector, declarations|
         bare_selector = bare_selector_from(selector)
 
@@ -48,12 +50,6 @@ module Headhunter
       end.compact # FIXME: Why is compact needed?
     end
 
-    def load_css
-      @stylesheets.each do |stylesheet|
-        add_css_selectors_from(IO.read(stylesheet))
-      end
-    end
-
     def add_css_selectors_from(css)
       parser = CssParser::Parser.new
       parser.add_block!(css)
@@ -61,36 +57,24 @@ module Headhunter
       selector_count = 0
 
       parser.each_selector do |selector, declarations, specificity|
-        next if @unused_selectors.include?(selector)
-        next if selector =~ @ignore_selectors
-        next if has_pseudo_classes(selector) and @unused_selectors.include?(bare_selector_from(selector))
-
+        # next if @unused_selectors.include?(selector)
+        # next if has_pseudo_classes?(selector) and @unused_selectors.include?(bare_selector_from(selector))
+        binding.pry
         @unused_selectors << selector
-        @parsed_rules[selector] = declarations
-
-        selector_count += 1
       end
-
-      selector_count
     end
 
-    def has_pseudo_classes(selector)
-      selector =~ /::?[\w\-]+/
-    end
+    # def has_pseudo_classes?(selector)
+    #   selector =~ /::?[\w\-]+/
+    # end
 
     def bare_selector_from(selector)
-      selector = remove_at_rules_from(selector)
-      selector = remove_pseudo_classes_from(selector)
-    end
-
-    def remove_at_rules_from(selector)
-      selector.gsub(/^@.*/, '') # @keyframes
+      # Add more clean up stuff here, e.g. stuff like @keyframe (Deadweight implemented this)?
+      remove_pseudo_classes_from(selector)
     end
 
     def remove_pseudo_classes_from(selector)
       selector.gsub(/:.*/, '')  # input#x:nth-child(2):not(#z.o[type='file'])
     end
   end
-
-  class FetchError < StandardError; end
 end

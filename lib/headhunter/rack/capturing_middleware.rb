@@ -16,7 +16,7 @@ module Headhunter
         status, headers, response = rack_response
 
         if html = extract_html_from(response)
-          @hh.process!('unknown', html)
+          @hh.process('unknown', html)
         end
       end
 

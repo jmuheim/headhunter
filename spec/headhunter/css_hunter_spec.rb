@@ -1,3 +1,31 @@
+require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+
+describe Headhunter::CssHunter do
+  describe '#remove_pseudo_classes_from' do
+    subject { described_class.new }
+
+    it 'returns pseudo classes' do
+      expect(subject.remove_pseudo_classes_from('textarea:not(.something)')).to eq 'textarea'
+    end
+  end
+
+  describe '#bare_selector_from' do
+    subject { described_class.new }
+
+    it 'cleans a selector from stuff like pseudo classes' do
+      expect(subject.bare_selector_from('textarea:not(.something)')).to eq 'textarea'
+    end
+  end
+
+  describe '#add_css_selectors_from' do
+    subject { described_class.new }
+
+    it 'adds selectors' do
+      expect(subject.add_css_selectors_from(read_file('valid.css'))).to eq 'textarea'
+    end
+  end
+end
+
 # require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 # 
 # unless defined?(SpecFailed)
