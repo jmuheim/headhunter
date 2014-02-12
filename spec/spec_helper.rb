@@ -1,9 +1,9 @@
 require 'headhunter'
 require 'pry'
 require 'colorize'
-require 'coveralls'
+# require 'coveralls'
 
-Coveralls.wear!
+# Coveralls.wear!
 
 $: << File.join(File.dirname(__FILE__), %w(.. lib))
 
