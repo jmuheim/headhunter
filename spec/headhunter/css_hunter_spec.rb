@@ -57,6 +57,27 @@ describe Headhunter::CssHunter do
                                                        '.clear-float']
     end
   end
+
+  describe '#statistics' do
+    subject do
+      css_hunter = described_class.new
+      css_hunter.add_css_selectors_from(read_file('valid.css'))
+      css_hunter.process(read_file('valid.html'))
+      css_hunter.statistics
+    end
+
+    it "returns a text with nice statistics" do
+      expect(subject).to match 'Found 10 CSS selectors.'
+      expect(subject).to match '7 selectors are not in use:'
+      expect(subject).to match '.clear-float'
+      expect(subject).to match '.hidden'
+      expect(subject).to match 'a'
+      expect(subject).to match 'a img'
+      expect(subject).to match 'a:hover'
+      expect(subject).to match 'ul'
+      expect(subject).to match 'ul li'
+    end
+  end
 end
 
 # require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
