@@ -21,7 +21,7 @@ describe Headhunter::CssHunter do
     subject { described_class.new }
 
     it 'adds selectors' do
-      subject.add_css_selectors_from(read_file('valid.css'))
+      subject.add_css_selectors_from(read_file('css_validator/valid.css'))
 
       expect(subject.error_selectors).to eq []
       expect(subject.used_selectors).to eq []
@@ -34,9 +34,9 @@ describe Headhunter::CssHunter do
     subject { described_class.new }
 
     it 'adds selectors' do
-      subject.add_css_selectors_from(read_file('valid.css'))
+      subject.add_css_selectors_from(read_file('css_validator/valid.css'))
 
-      expect(subject.detect_used_selectors_in(read_file('valid.html'))).to match_array ['html', 'body', '*']
+      expect(subject.detect_used_selectors_in(read_file('css_hunter/valid.html'))).to match_array ['html', 'body', '*']
     end
 
     it 'gracefully ignores invalid rules' do
@@ -48,8 +48,8 @@ describe Headhunter::CssHunter do
     subject { described_class.new }
 
     it 'processes given html' do
-      subject.add_css_selectors_from(read_file('valid.css'))
-      subject.process(read_file('valid.html'))
+      subject.add_css_selectors_from(read_file('css_validator/valid.css'))
+      subject.process(read_file('css_hunter/valid.html'))
 
       expect(subject.error_selectors).to eq []
       expect(subject.used_selectors).to eq ['html', 'body', '*']
@@ -61,8 +61,8 @@ describe Headhunter::CssHunter do
   describe '#statistics' do
     subject do
       css_hunter = described_class.new
-      css_hunter.add_css_selectors_from(read_file('valid.css'))
-      css_hunter.process(read_file('valid.html'))
+      css_hunter.add_css_selectors_from(read_file('css_validator/valid.css'))
+      css_hunter.process(read_file('css_hunter/valid.html'))
       css_hunter.statistics
     end
 

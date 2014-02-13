@@ -5,7 +5,7 @@ describe Headhunter::CssValidator do
     subject { described_class.new }
 
     it 'returns a local response when calling the validator succeeds' do
-      expect(subject.validate(path_to_file('invalid.css'))).to be_a Headhunter::CssValidator::Response
+      expect(subject.validate(path_to_file('css_validator/invalid.css'))).to be_a Headhunter::CssValidator::Response
     end
 
     it 'throws an exception when calling the validator fails'
@@ -43,7 +43,7 @@ describe Headhunter::CssValidator do
 
   describe '#statistics' do
     context 'for valid CSS' do
-      subject { described_class.new([path_to_file('valid.css')]).statistics }
+      subject { described_class.new([path_to_file('css_validator/valid.css')]).statistics }
 
       it "returns a text with nice statistics" do
         expect(subject).to match 'Validated 1 stylesheet.'
@@ -52,7 +52,7 @@ describe Headhunter::CssValidator do
     end
 
     context 'for invalid CSS' do
-      subject { described_class.new([path_to_file('invalid.css')]).statistics }
+      subject { described_class.new([path_to_file('css_validator/invalid.css')]).statistics }
 
       it "returns a text with nice statistics" do
         expect(subject).to match 'Validated 1 stylesheet.'
@@ -74,7 +74,7 @@ describe Headhunter::CssValidator do
     end
 
     context 'for valid CSS' do
-      subject { described_class.new([path_to_file('valid.css')]) }
+      subject { described_class.new([path_to_file('css_validator/valid.css')]) }
 
       it 'executes validation' do
         expect(subject.valid_responses.size).to eq 1
@@ -83,7 +83,7 @@ describe Headhunter::CssValidator do
     end
 
     context 'for invalid CSS' do
-      subject { described_class.new([path_to_file('invalid.css')]) }
+      subject { described_class.new([path_to_file('css_validator/invalid.css')]) }
 
       it 'executes validation' do
         expect(subject.invalid_responses.size).to eq 1
@@ -93,7 +93,7 @@ describe Headhunter::CssValidator do
   end
 
   describe '#valid_responses' do
-    subject { described_class.new([path_to_file('valid.css')]) }
+    subject { described_class.new([path_to_file('css_validator/valid.css')]) }
 
     it 'returns all valid responses' do
       expect(subject.valid_responses.size).to eq 1
@@ -102,7 +102,7 @@ describe Headhunter::CssValidator do
   end
 
   describe '#invalid_responses' do
-    subject { described_class.new([path_to_file('invalid.css')]) }
+    subject { described_class.new([path_to_file('css_validator/invalid.css')]) }
 
     it 'returns all valid responses' do
       expect(subject.invalid_responses.size).to eq 1
@@ -114,13 +114,13 @@ end
 describe Headhunter::CssValidator::Response do
   describe '#initialize' do
     context 'valid response' do
-      subject { described_class.new(read_file('valid_response.xml')) }
+      subject { described_class.new(read_file('css_validator/valid_response.xml')) }
 
       it { should be_valid }
     end
 
     context 'invalid response' do
-      subject { described_class.new(read_file('invalid_response.xml')) }
+      subject { described_class.new(read_file('css_validator/invalid_response.xml')) }
 
       it { should_not be_valid }
     end
@@ -128,7 +128,7 @@ describe Headhunter::CssValidator::Response do
 
   describe '#errors' do
     context 'valid response' do
-      subject { described_class.new(read_file('valid_response.xml')) }
+      subject { described_class.new(read_file('css_validator/valid_response.xml')) }
 
       it 'returns an empty array' do
         expect(subject.errors).to eq []
@@ -136,7 +136,7 @@ describe Headhunter::CssValidator::Response do
     end
 
     context 'invalid response' do
-      subject { described_class.new(read_file('invalid_response.xml')) }
+      subject { described_class.new(read_file('css_validator/invalid_response.xml')) }
 
       it 'returns an array of errors' do
         expect(subject.errors.size).to eq 1
@@ -173,7 +173,7 @@ describe Headhunter::CssValidator::Response do
   end
 
   describe '#uri' do
-    subject { described_class.new(read_file('valid_response.xml')) }
+    subject { described_class.new(read_file('css_validator/valid_response.xml')) }
 
     it "returns the validated uri's path" do
       expect(subject.send :uri).to eq 'file:tmp.css'

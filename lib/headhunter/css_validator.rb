@@ -3,7 +3,7 @@ require 'nokogiri/xml'
 
 module Headhunter
   class CssValidator
-    VALIDATOR_PATH = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
+    VALIDATOR_DIR = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
 
     attr_reader :stylesheets, :responses
 
@@ -21,7 +21,8 @@ module Headhunter
       # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
       # More config options see http://jigsaw.w3.org/css-validator/manual.html
       results = if File.exists?(uri)
-                  Dir.chdir(VALIDATOR_PATH) { `java -jar css-validator.jar --output=soap12 file:#{uri}` }
+                  # TODO: Better use Open3.popen3!
+                  Dir.chdir(VALIDATOR_DIR) { `java -jar css-validator.jar --output=soap12 file:#{uri}` }
                 else
                   raise "Couldn't locate uri #{uri}"
                 end
@@ -73,19 +74,19 @@ module Headhunter
 
     class Response
       def initialize(response = nil)
-        @document = Nokogiri::XML(convert_soap_to_xml(response)) if response
+        @dom = Nokogiri::XML(convert_soap_to_xml(response)) if response
       end
 
       def [](key)
-        @headers[key]
+        @dom[key] # TODO: still needed?
       end
 
       def valid?
-        @document.css('validity').text == 'true'
+        @dom.css('validity').text == 'true'
       end
 
       def errors
-        @document.css('errors error').map do |error|
+        @dom.css('errors error').map do |error|
           Error.new( error.css('line').text.strip.to_i,
                      error.css('message').text.strip[0..-3],
                      errortype: error.css('errortype').text.strip,
@@ -97,7 +98,7 @@ module Headhunter
       end
 
       def uri
-        @document.css('cssvalidationresponse > uri').text
+        @dom.css('cssvalidationresponse > uri').text
       end
 
       private

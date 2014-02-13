@@ -5,7 +5,7 @@ describe Headhunter::HtmlValidator do
     subject { described_class.new }
 
     it 'returns a local response when calling the validator succeeds' do
-      expect(subject.validate('invalid.html', read_file('invalid.html'))).to be_a HTMLValidationResult
+      expect(subject.validate('invalid.html', read_file('html_validator/invalid.html'))).to be_a Headhunter::HtmlValidator::Response
     end
 
     it 'throws an exception when calling the validator fails'
@@ -31,7 +31,7 @@ describe Headhunter::HtmlValidator do
     context 'for valid HTML' do
       subject do
         validator = described_class.new
-        validator.validate('valid.html', read_file('valid.html'))
+        validator.validate('valid.html', read_file('html_validator/valid.html'))
         validator.statistics
       end
 
@@ -44,7 +44,7 @@ describe Headhunter::HtmlValidator do
     context 'for invalid HTML' do
       subject do
         validator = described_class.new
-        validator.validate('invalid.html', read_file('invalid.html'))
+        validator.validate('invalid.html', read_file('html_validator/invalid.html'))
         validator.statistics
       end
 
@@ -52,7 +52,8 @@ describe Headhunter::HtmlValidator do
         expect(subject).to match 'Validated 1 page.'
         expect(subject).to match '1 page is invalid.'
         expect(subject).to match 'invalid.html:'
-        expect(subject).to match "line 12 column 47 - Warning: discarding unexpected </b>."
+        expect(subject).to match 'Line 12, column 6: Warning: missing </b> before </p>.'
+        expect(subject).to match 'Line 12, column 54: Warning: discarding unexpected </b>.'
       end
     end
   end
@@ -60,7 +61,7 @@ describe Headhunter::HtmlValidator do
   describe '#valid_responses' do
     subject do
       validator = described_class.new
-      validator.validate('valid.html', read_file('valid.html'))
+      validator.validate('valid.html', read_file('html_validator/valid.html'))
       validator
     end
 
@@ -73,13 +74,68 @@ describe Headhunter::HtmlValidator do
   describe '#invalid_responses' do
     subject do
       validator = described_class.new
-      validator.validate('invalid.html', read_file('invalid.html'))
+      validator.validate('invalid.html', read_file('html_validator/invalid.html'))
       validator
     end
 
     it 'returns all valid responses' do
       expect(subject.invalid_responses.size).to eq 1
       expect(subject.valid_responses.size).to eq 0
+    end
+  end
+end
+
+describe Headhunter::HtmlValidator::Response do
+  describe '#initialize' do
+    context 'valid response' do
+      subject { described_class.new(read_file('html_validator/valid_response.txt'), 'some-path.html') }
+
+      it { should be_valid }
+    end
+
+    context 'invalid response' do
+      subject { described_class.new(read_file('html_validator/invalid_response.txt'), 'some-path.html') }
+
+      it { should_not be_valid }
+    end
+  end
+
+  describe '#errors' do
+    context 'valid response' do
+      subject { described_class.new(read_file('html_validator/valid_response.txt'), 'some-path.html') }
+
+      it 'returns an empty array' do
+        expect(subject.errors).to eq []
+      end
+    end
+
+    context 'invalid response' do
+      subject { described_class.new(read_file('html_validator/invalid_response.txt'), 'some-path.html') }
+
+      it 'returns an array of errors' do
+        expect(subject.errors.size).to eq 1
+        expect(subject.errors.first).to be_a Headhunter::HtmlValidator::Response::Error
+      end
+    end
+  end
+
+  describe '#uri' do
+      subject { described_class.new(read_file('html_validator/valid_response.txt'), 'some-path.html') }
+
+    it "returns the validated uri's path" do
+      expect(subject.send :uri).to eq 'some-path.html'
+    end
+  end
+end
+
+describe Headhunter::HtmlValidator::Response::Error do
+  describe '#initialize' do
+    subject { described_class.new(123, "Attribute xyz doesn't exist", context: 'something', anything_else: 'bla') }
+
+    it 'assigns the passed params correctly' do
+      expect(subject.line).to eq 123
+      expect(subject.message).to eq "Attribute xyz doesn't exist"
+      expect(subject.details).to eq context: 'something', anything_else: 'bla'
     end
   end
 end
