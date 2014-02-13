@@ -8,9 +8,9 @@ module Headhunter
       @responses = []
     end
 
-    def validate(url, html)
+    def validate(uri, html)
       # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
-      @responses << PageValidations::HTMLValidation.new.validation(html, url)
+      @responses << PageValidations::HTMLValidation.new.validation(html, uri)
       @responses.last
     end
 
