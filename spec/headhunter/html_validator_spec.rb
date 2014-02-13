@@ -5,7 +5,7 @@ describe Headhunter::HtmlValidator do
     subject { described_class.new }
 
     it 'returns a local response when calling the validator succeeds' do
-      expect(subject.validate('invalid.html', read_file('invalid.html'))).to be_a HTMLValidationResult
+      expect(subject.validate('invalid.html', read_file('invalid.html'))).to be_a Headhunter::HtmlValidator::Response
     end
 
     it 'throws an exception when calling the validator fails'
@@ -52,7 +52,8 @@ describe Headhunter::HtmlValidator do
         expect(subject).to match 'Validated 1 page.'
         expect(subject).to match '1 page is invalid.'
         expect(subject).to match 'invalid.html:'
-        expect(subject).to match "line 12 column 47 - Warning: discarding unexpected </b>."
+        expect(subject).to match 'Line 12, column 6: Warning: missing </b> before </p>.'
+        expect(subject).to match 'Line 12, column 54: Warning: discarding unexpected </b>.'
       end
     end
   end

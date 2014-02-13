@@ -73,19 +73,19 @@ module Headhunter
 
     class Response
       def initialize(response = nil)
-        @document = Nokogiri::XML(convert_soap_to_xml(response)) if response
+        @dom = Nokogiri::XML(convert_soap_to_xml(response)) if response
       end
 
       def [](key)
-        @headers[key]
+        @dom[key] # TODO: still needed?
       end
 
       def valid?
-        @document.css('validity').text == 'true'
+        @dom.css('validity').text == 'true'
       end
 
       def errors
-        @document.css('errors error').map do |error|
+        @dom.css('errors error').map do |error|
           Error.new( error.css('line').text.strip.to_i,
                      error.css('message').text.strip[0..-3],
                      errortype: error.css('errortype').text.strip,
@@ -97,7 +97,7 @@ module Headhunter
       end
 
       def uri
-        @document.css('cssvalidationresponse > uri').text
+        @dom.css('cssvalidationresponse > uri').text
       end
 
       private
