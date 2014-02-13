@@ -21,6 +21,7 @@ module Headhunter
       # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
       # More config options see http://jigsaw.w3.org/css-validator/manual.html
       results = if File.exists?(uri)
+                  # TODO: Better use Open3.popen3!
                   Dir.chdir(VALIDATOR_DIR) { `java -jar css-validator.jar --output=soap12 file:#{uri}` }
                 else
                   raise "Couldn't locate uri #{uri}"
