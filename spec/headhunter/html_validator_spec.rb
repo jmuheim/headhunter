@@ -84,3 +84,58 @@ describe Headhunter::HtmlValidator do
     end
   end
 end
+
+describe Headhunter::HtmlValidator::Response do
+  describe '#initialize' do
+    context 'valid response' do
+      subject { described_class.new(read_file('html_validator/valid_response.txt'), 'some-path.html') }
+
+      it { should be_valid }
+    end
+
+    context 'invalid response' do
+      subject { described_class.new(read_file('html_validator/invalid_response.txt'), 'some-path.html') }
+
+      it { should_not be_valid }
+    end
+  end
+
+  describe '#errors' do
+    context 'valid response' do
+      subject { described_class.new(read_file('html_validator/valid_response.txt'), 'some-path.html') }
+
+      it 'returns an empty array' do
+        expect(subject.errors).to eq []
+      end
+    end
+
+    context 'invalid response' do
+      subject { described_class.new(read_file('html_validator/invalid_response.txt'), 'some-path.html') }
+
+      it 'returns an array of errors' do
+        expect(subject.errors.size).to eq 1
+        expect(subject.errors.first).to be_a Headhunter::HtmlValidator::Response::Error
+      end
+    end
+  end
+
+  describe '#uri' do
+      subject { described_class.new(read_file('html_validator/valid_response.txt'), 'some-path.html') }
+
+    it "returns the validated uri's path" do
+      expect(subject.send :uri).to eq 'some-path.html'
+    end
+  end
+end
+
+describe Headhunter::HtmlValidator::Response::Error do
+  describe '#initialize' do
+    subject { described_class.new(123, "Attribute xyz doesn't exist", context: 'something', anything_else: 'bla') }
+
+    it 'assigns the passed params correctly' do
+      expect(subject.line).to eq 123
+      expect(subject.message).to eq "Attribute xyz doesn't exist"
+      expect(subject.details).to eq context: 'something', anything_else: 'bla'
+    end
+  end
+end
