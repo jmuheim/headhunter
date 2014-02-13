@@ -5,7 +5,7 @@ describe Headhunter::HtmlValidator do
     subject { described_class.new }
 
     it 'returns a local response when calling the validator succeeds' do
-      expect(subject.validate('invalid.html', read_file('invalid.html'))).to be_a Headhunter::HtmlValidator::Response
+      expect(subject.validate('invalid.html', read_file('html_validator/invalid.html'))).to be_a Headhunter::HtmlValidator::Response
     end
 
     it 'throws an exception when calling the validator fails'
@@ -31,7 +31,7 @@ describe Headhunter::HtmlValidator do
     context 'for valid HTML' do
       subject do
         validator = described_class.new
-        validator.validate('valid.html', read_file('valid.html'))
+        validator.validate('valid.html', read_file('html_validator/valid.html'))
         validator.statistics
       end
 
@@ -44,7 +44,7 @@ describe Headhunter::HtmlValidator do
     context 'for invalid HTML' do
       subject do
         validator = described_class.new
-        validator.validate('invalid.html', read_file('invalid.html'))
+        validator.validate('invalid.html', read_file('html_validator/invalid.html'))
         validator.statistics
       end
 
@@ -61,7 +61,7 @@ describe Headhunter::HtmlValidator do
   describe '#valid_responses' do
     subject do
       validator = described_class.new
-      validator.validate('valid.html', read_file('valid.html'))
+      validator.validate('valid.html', read_file('html_validator/valid.html'))
       validator
     end
 
@@ -74,7 +74,7 @@ describe Headhunter::HtmlValidator do
   describe '#invalid_responses' do
     subject do
       validator = described_class.new
-      validator.validate('invalid.html', read_file('invalid.html'))
+      validator.validate('invalid.html', read_file('html_validator/invalid.html'))
       validator
     end
 
