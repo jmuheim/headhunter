@@ -3,7 +3,7 @@ require 'nokogiri/xml'
 
 module Headhunter
   class CssValidator
-    VALIDATOR_PATH = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
+    VALIDATOR_DIR = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/css-validator/'
 
     attr_reader :stylesheets, :responses
 
@@ -21,7 +21,7 @@ module Headhunter
       # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
       # More config options see http://jigsaw.w3.org/css-validator/manual.html
       results = if File.exists?(uri)
-                  Dir.chdir(VALIDATOR_PATH) { `java -jar css-validator.jar --output=soap12 file:#{uri}` }
+                  Dir.chdir(VALIDATOR_DIR) { `java -jar css-validator.jar --output=soap12 file:#{uri}` }
                 else
                   raise "Couldn't locate uri #{uri}"
                 end

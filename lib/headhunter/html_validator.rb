@@ -2,8 +2,7 @@ require 'html_validation'
 
 module Headhunter
   class HtmlValidator
-    # TODO: Is path a good name? It implies the executable file is in it, too. Shouldn't it be something like VALIDATOR_HOME/DIR?
-    VALIDATOR_PATH = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/'
+    VALIDATOR_DIR = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/'
 
     attr_reader :responses
 
@@ -12,7 +11,7 @@ module Headhunter
     end
 
     def validate(uri, html)
-      Dir.chdir(VALIDATOR_PATH) do
+      Dir.chdir(VALIDATOR_DIR) do
         # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
         stdin, stdout, stderr = Open3.popen3('tidy -quiet')
         stdin.puts html
