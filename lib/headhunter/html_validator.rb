@@ -38,8 +38,8 @@ module Headhunter
       lines = []
 
       lines << "Validated #{responses.size} pages.".yellow
-      lines << "All pages are valid.".green if invalid_responses.size == 0
-      lines << "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.size > 0
+      lines << "All pages are valid.".green unless invalid_responses.any?
+      lines << "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
 
       invalid_responses.each do |response|
         lines << "  #{response.uri}:".red
