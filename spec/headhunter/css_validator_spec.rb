@@ -4,8 +4,10 @@ describe Headhunter::CssValidator do
   describe '#validate' do
     subject { described_class.new }
 
-    it 'returns a local response when calling the validator succeeds' do
-      expect(subject.validate(path_to_file('css_validator/invalid.css'))).to be_a Headhunter::CssValidator::Response
+    it 'adds a response when calling the validator succeeds' do
+      expect {
+        subject.validate(path_to_file('css_validator/invalid.css'))
+      }.to change { subject.responses.count }.by 1
     end
 
     it 'throws an exception when calling the validator fails'

@@ -12,22 +12,26 @@ module Headhunter
       @profile     = profile     # TODO!
       @vextwarning = vextwarning # TODO!
 
-      @responses = @stylesheets.map do |stylesheet|
-                     validate(stylesheet)
-                   end
+      @responses = []
+
+      @stylesheets.map do |stylesheet|
+        validate(stylesheet)
+      end
     end
 
     def validate(uri)
-      # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
-      # More config options see http://jigsaw.w3.org/css-validator/manual.html
-      results = if File.exists?(uri)
-                  # TODO: Better use Open3.popen3!
-                  Dir.chdir(VALIDATOR_DIR) { `java -jar css-validator.jar --output=soap12 file:#{uri}` }
-                else
-                  raise "Couldn't locate uri #{uri}"
-                end
+      Dir.chdir(VALIDATOR_DIR) do
+        raise "Couldn't locate uri #{uri}" unless File.exists? uri
 
-      Response.new(results)
+        # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
+        # More config options see http://jigsaw.w3.org/css-validator/manual.html
+        stdin, stdout, stderr = Open3.popen3("java -jar css-validator.jar --output=soap12 file:#{uri}")
+        stdin.close
+        stderr.close
+
+        @responses << Response.new(stdout.read)
+        stdout.close
+      end
     end
 
     def valid_responses

@@ -20,7 +20,7 @@ module Headhunter
 
     def process(url, html)
       @html_validator.validate(url, html)
-      @css_hunter.process(url, html)
+      @css_hunter.process(html)
     end
 
     def clean_up!

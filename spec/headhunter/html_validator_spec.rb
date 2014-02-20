@@ -5,7 +5,9 @@ describe Headhunter::HtmlValidator do
     subject { described_class.new }
 
     it 'returns a local response when calling the validator succeeds' do
-      expect(subject.validate('invalid.html', read_file('html_validator/invalid.html'))).to be_a Headhunter::HtmlValidator::Response
+      expect {
+        subject.validate('invalid.html', read_file('html_validator/invalid.html'))
+      }.to change { subject.responses.count }.by 1
     end
 
     it 'throws an exception when calling the validator fails'
