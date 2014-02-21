@@ -1,5 +1,6 @@
 require 'css_parser'
 require 'nokogiri'
+require 'colorize'
 
 module Headhunter
   class CssHunter

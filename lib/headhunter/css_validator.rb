@@ -1,3 +1,5 @@
+require 'open3'
+require 'colorize'
 require 'net/http'
 require 'nokogiri/xml'
 

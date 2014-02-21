@@ -1,9 +1,9 @@
-# encoding: utf-8
+$:.push File.expand_path("../lib", __FILE__)
 
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+# Maintain your gem's version:
 require 'headhunter/version'
 
+# Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = 'headhunter'
   s.version     = Headhunter::VERSION
@@ -14,19 +14,14 @@ Gem::Specification.new do |s|
   s.description = 'Headhunter is an HTML and CSS validation tool that injects itself into your Rails feature tests and automagically checks all your generated HTML and CSS for validity. In addition, it also looks out for unused (and therefore superfluous) CSS selectors.'
   s.license     = 'MIT'
 
-  s.add_dependency 'nokogiri'
+  s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.rdoc']
+
+  s.add_dependency 'rails', '~> 4.0.3'
   s.add_dependency 'css_parser', '>= 1.2.6'
-  s.add_dependency 'html_validation'
   s.add_dependency 'colorize'
 
-  s.add_development_dependency('rspec')
-  s.add_development_dependency('fuubar')
-  s.add_development_dependency('pry')
-  s.add_development_dependency('coolline')
-  s.add_development_dependency('awesome_print')
-  s.add_development_dependency('gem-release')
-  s.add_development_dependency('rake')
-  s.add_development_dependency('rspec', '>= 2.0')
+  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'capybara'
 
-  s.files = Dir['{lib/**/*,[A-Z]*}'] + Dir['docs/*.png']
+  s.test_files = Dir['spec/**/*']
 end
