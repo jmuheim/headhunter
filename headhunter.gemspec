@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rails'
   s.add_dependency 'css_parser', '>= 1.2.6'
   s.add_dependency 'colorize'
+  s.add_dependency 'nokogiri'
 
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'capybara'
