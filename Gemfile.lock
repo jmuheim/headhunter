@@ -4,7 +4,7 @@ PATH
     headhunter (0.1.7)
       colorize
       css_parser (>= 1.2.6)
-      rails (~> 4.0.3)
+      rails
 
 GEM
   remote: https://rubygems.org/
