@@ -1,3 +1,8 @@
 source 'https://rubygems.org'
 
+# TODO: Can't this be included via ../../headhunter.gemspec?
 gem 'headhunter', path: '../../'
+gem 'nokogiri'
+gem 'rails'
+gem 'rspec-rails'
+gem 'capybara'
