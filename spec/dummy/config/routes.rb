@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  mount Headhunter::Engine => "/headhunter"
-
   resources :posts, only: :index
 
   # The priority is based upon order of creation: first created -> highest priority.
