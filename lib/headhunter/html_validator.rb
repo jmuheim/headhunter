@@ -1,4 +1,5 @@
-require 'html_validation'
+require 'open3'
+require 'colorize'
 
 module Headhunter
   class HtmlValidator
