@@ -1,13 +1,8 @@
 require 'spec_helper'
 
-feature 'Info center' do
-  background do
-    # Bla...
-  end
-
-  scenario "Showing the list's column names: Wo?, Wer?, Was? and Wann?" do
+feature 'Middleware integration' do
+  scenario "Integrating the middleware into the Rack stack" do
+    expect(Headhunter::Rack::CapturingMiddleware.any_instance).to receive(:call)
     visit posts_path
-
-    expect(page).to have_content 'Listing posts'
   end
 end
