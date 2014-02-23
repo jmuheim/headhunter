@@ -4,7 +4,7 @@ rescue LoadError
   puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
 end
 
-ENV['HEADHUNTER'] ||= 'true'
+ENV['HEADHUNTER'] ||= 'true' # Normally, headhunter is only loaded when submitting HEADHUNTER=true on the command line. For sake of simplicity, we activate it here generally.
 
 require 'rdoc/task'
 
@@ -21,7 +21,7 @@ load 'rails/tasks/engine.rake'
 
 Bundler::GemHelper.install_tasks
 
-Dir[File.join(File.dirname(__FILE__), 'tasks/**/*.rake')].each {|f| load f }
+Dir[File.join(File.dirname(__FILE__), 'tasks/**/*.rake')].each { |f| load f }
 
 require 'rspec/core'
 require 'rspec/core/rake_task'
