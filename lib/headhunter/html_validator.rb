@@ -3,8 +3,7 @@ require 'colorize'
 
 module Headhunter
   class HtmlValidator
-    VALIDATOR_DIR = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/'
-    EXECUTABLE    = 'tidy2'
+    EXECUTABLE = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/tidy2'
 
     attr_reader :responses
 
@@ -13,18 +12,16 @@ module Headhunter
     end
 
     def validate(uri, html)
-      Dir.chdir(VALIDATOR_DIR) do
-        raise "Could not find tidy in #{Dir.pwd}" unless File.exists? EXECUTABLE
+      raise "Could not find tidy in #{Dir.pwd}" unless File.exists? EXECUTABLE
 
-        # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
-        stdin, stdout, stderr = Open3.popen3("#{EXECUTABLE} -quiet")
-        stdin.puts html
-        stdin.close
-        stdout.close
+      # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
+      stdin, stdout, stderr = Open3.popen3("#{EXECUTABLE} -quiet")
+      stdin.puts html
+      stdin.close
+      stdout.close
 
-        @responses << Response.new(stderr.read, uri)
-        stderr.close
-      end
+      @responses << Response.new(stderr.read, uri)
+      stderr.close
     end
 
     def valid_responses
