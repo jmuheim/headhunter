@@ -12,7 +12,7 @@ module Headhunter
     end
 
     def validate(uri, html)
-      raise "Could not find tidy in #{Dir.pwd}" unless File.exists? EXECUTABLE
+      raise "Could not find tidy executable in #{EXECUTABLE}" unless File.exists? EXECUTABLE
 
       # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
       stdin, stdout, stderr = Open3.popen3("#{EXECUTABLE} -quiet")
