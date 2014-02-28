@@ -45,21 +45,19 @@ module Headhunter
     end
 
     def statistics
-      lines = []
-
-      lines << "Validated #{responses.size} stylesheets.".yellow
-      lines << "All stylesheets are valid.".green unless invalid_responses.any?
-      lines << "#{x_stylesheets_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
+      lines = "Validated #{responses.size} stylesheets.".yellow
+      lines += "All stylesheets are valid.".green unless invalid_responses.any?
+      lines += "#{x_stylesheets_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
 
       invalid_responses.each do |response|
-        lines << "  #{extract_filename(response.uri)}:".red
+        lines += "  #{extract_filename(response.uri)}:".red
 
         response.errors.each do |error|
-          lines << "    - #{error.to_s}".red
+          lines += "    - #{error.to_s}".red
         end
       end
 
-      lines.join("\n")
+      lines
     end
 
     def extract_filename(path)
