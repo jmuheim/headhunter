@@ -3,8 +3,7 @@ require 'colorize'
 
 module Headhunter
   class HtmlValidator
-    VALIDATOR_DIR = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/'
-    EXECUTABLE    = 'tidy2'
+    EXECUTABLE = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/tidy2'
 
     attr_reader :responses
 
@@ -13,18 +12,16 @@ module Headhunter
     end
 
     def validate(uri, html)
-      Dir.chdir(VALIDATOR_DIR) do
-        raise "Could not find tidy in #{Dir.pwd}" unless File.exists? EXECUTABLE
+      raise "Could not find tidy executable in #{EXECUTABLE}" unless File.exists? EXECUTABLE
 
-        # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
-        stdin, stdout, stderr = Open3.popen3("#{EXECUTABLE} -quiet")
-        stdin.puts html
-        stdin.close
-        stdout.close
+      # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
+      stdin, stdout, stderr = Open3.popen3("#{EXECUTABLE} -quiet")
+      stdin.puts html
+      stdin.close
+      stdout.close
 
-        @responses << Response.new(stderr.read, uri)
-        stderr.close
-      end
+      @responses << Response.new(stderr.read, uri)
+      stderr.close
     end
 
     def valid_responses
@@ -36,21 +33,19 @@ module Headhunter
     end
 
     def statistics
-      lines = []
-
-      lines << "Validated #{responses.size} pages.".yellow
-      lines << "All pages are valid.".green unless invalid_responses.any?
-      lines << "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
+      lines = "Validated #{responses.size} pages.".yellow
+      lines += "All pages are valid.".green unless invalid_responses.any?
+      lines += "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
 
       invalid_responses.each do |response|
-        lines << "  #{response.uri}:".red
+        lines += "  #{response.uri}:".red
 
         response.errors.each do |error|
-          lines << "    - #{error.to_s}".red
+          lines += "    - #{error.to_s}".red
         end
       end
 
-      lines.join("\n")
+      lines
     end
 
     def x_pages_be(size)

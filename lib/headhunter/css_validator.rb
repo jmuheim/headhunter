@@ -45,21 +45,24 @@ module Headhunter
     end
 
     def statistics
-      lines = []
+      lines = "Validated #{responses.size} stylesheets.".yellow
+      lines += "All stylesheets are valid.".green unless invalid_responses.any?
+      lines += "#{x_stylesheets_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
+      lines += print_invalid_responses
 
-      lines << "Validated #{responses.size} stylesheets.".yellow
-      lines << "All stylesheets are valid.".green unless invalid_responses.any?
-      lines << "#{x_stylesheets_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
+      lines
+    end
 
+    def print_invalid_responses
+      lines = ''
       invalid_responses.each do |response|
-        lines << "  #{extract_filename(response.uri)}:".red
+        lines += "  #{extract_filename(response.uri)}:".red
 
         response.errors.each do |error|
-          lines << "    - #{error.to_s}".red
+          lines += "    - #{error.to_s}".red
         end
       end
-
-      lines.join("\n")
+      lines
     end
 
     def extract_filename(path)
@@ -93,13 +96,12 @@ module Headhunter
 
       def errors
         @dom.css('errors error').map do |error|
-          Error.new( error.css('line').text.strip.to_i,
-                     error.css('message').text.strip[0..-3],
-                     errortype: error.css('errortype').text.strip,
-                     context: error.css('context').text.strip,
-                     errorsubtype: error.css('errorsubtype').text.strip,
-                     skippedstring: error.css('skippedstring').text.strip
-                   )
+          Error.new line_errors(error),
+                     error_message(error),
+                     errortype: error_type(error),
+                     context: error_context(error),
+                     errorsubtype: error_subtype(error),
+                     skippedstring: error_skippedstring(error)
         end
       end
 
@@ -113,6 +115,34 @@ module Headhunter
         sanitize_prefixed_tags_from(
           remove_first_line_from(soap)
         )
+      end
+
+      def error_type(error)
+        text_strip error.css('errortype')
+      end
+
+      def error_message(error)
+        text_strip(error.css 'message')[0..-3]
+      end
+
+      def line_errors(error)
+        text_strip(error.css 'line').to_i
+      end
+
+      def error_context(error)
+        text_strip error.css('context')
+      end
+
+      def error_skippedstring(error)
+        text_strip error.css('skippedstring')
+      end
+
+      def error_subtype(error)
+        text_strip error.css('errorsubtype')
+      end
+
+      def text_strip(string)
+        string.text.strip
       end
 
       # The first line of the validator's response contains parameter options like this:
