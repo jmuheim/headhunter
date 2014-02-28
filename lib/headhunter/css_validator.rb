@@ -48,7 +48,13 @@ module Headhunter
       lines = "Validated #{responses.size} stylesheets.".yellow
       lines += "All stylesheets are valid.".green unless invalid_responses.any?
       lines += "#{x_stylesheets_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
+      lines += print_invalid_responses
 
+      lines
+    end
+
+    def print_invalid_responses
+      lines = ''
       invalid_responses.each do |response|
         lines += "  #{extract_filename(response.uri)}:".red
 
@@ -56,7 +62,6 @@ module Headhunter
           lines += "    - #{error.to_s}".red
         end
       end
-
       lines
     end
 
