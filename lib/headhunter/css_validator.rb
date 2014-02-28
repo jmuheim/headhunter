@@ -145,8 +145,6 @@ module Headhunter
         string.text.strip
       end
 
-
-
       # The first line of the validator's response contains parameter options like this:
       #
       #     {vextwarning=false, output=soap, lang=en, warning=2, medium=all, profile=css3}
