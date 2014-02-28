@@ -33,21 +33,19 @@ module Headhunter
     end
 
     def statistics
-      lines = []
-
-      lines << "Validated #{responses.size} pages.".yellow
-      lines << "All pages are valid.".green unless invalid_responses.any?
-      lines << "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
+      lines = "Validated #{responses.size} pages.".yellow
+      lines += "All pages are valid.".green unless invalid_responses.any?
+      lines += "#{x_pages_be(invalid_responses.size)} invalid.".red if invalid_responses.any?
 
       invalid_responses.each do |response|
-        lines << "  #{response.uri}:".red
+        lines += "  #{response.uri}:".red
 
         response.errors.each do |error|
-          lines << "    - #{error.to_s}".red
+          lines += "    - #{error.to_s}".red
         end
       end
 
-      lines.join("\n")
+      lines
     end
 
     def x_pages_be(size)
