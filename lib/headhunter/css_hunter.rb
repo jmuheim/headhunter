@@ -25,14 +25,22 @@ module Headhunter
     end
 
     def statistics
-      lines = []
+      lines = "#{total_selector_size}\n"
+      lines += "All selectors are in use.\n".green unless (unused_selectors + error_selectors).any?
+      lines += "#{print_unused_selectors}\n#{print_error_selector_size}"
+      lines
+    end
 
-      lines << "Found #{used_selectors.size + unused_selectors.size + error_selectors.size} CSS selectors.".yellow
-      lines << 'All selectors are in use.'.green unless (unused_selectors + error_selectors).any?
-      lines << "#{unused_selectors.size} selectors are not in use: #{unused_selectors.sort.join(', ').red}".red if unused_selectors.any?
-      lines << "#{error_selectors.size} selectors could not be parsed: #{error_selectors.sort.join(', ').red}".red if error_selectors.any?
+    def total_selector_size
+      "Found #{used_selectors.size + unused_selectors.size + error_selectors.size} CSS selectors.".yellow
+    end
 
-      lines.join("\n")
+    def print_error_selector_size
+      "#{error_selectors.size} selectors could not be parsed: #{error_selectors.sort.join(', ')}".red if error_selectors.any?
+    end
+
+    def print_unused_selectors
+      "#{unused_selectors.size} selectors are not in use: #{unused_selectors.sort.join(', ')}".red if unused_selectors.any?
     end
 
     def detect_used_selectors_in(html)
