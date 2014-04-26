@@ -1,7 +1,7 @@
 PATH
   remote: ../../
   specs:
-    headhunter (0.1.7)
+    headhunter (0.1.9)
       colorize
       css_parser (>= 1.2.6)
       nokogiri
