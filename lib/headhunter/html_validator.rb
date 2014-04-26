@@ -4,7 +4,7 @@ require 'colorize'
 module Headhunter
   class HtmlValidator
     VALIDATOR_DIR = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/'
-    EXECUTABLE    = 'tidy2'
+    EXECUTABLE    = 'tidy'
 
     attr_reader :responses
 

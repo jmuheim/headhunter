@@ -47,7 +47,7 @@ For being able to validate CSS, `rake assets:precompile` is triggered at the beg
 
 ## Requirements
 
-**[Tidy HTML](http://tidy.sourceforge.net/)** should be installed on a typical OSX and Linux installation already - you're not developing on a Windows machine, are you?! If you want to validate HTML5 (and you should want to!), install the HTML5 version like described here: [homebrew tidy html5](http://techblog.willshouse.com/2013/10/21/homebrew-tidy-html5/).
+A local copy of **[Tidy HTML](http://tidy.sourceforge.net/)** is used. It's the [experimental HTML5 version]((http://techblog.willshouse.com/2013/10/21/homebrew-tidy-html5/), compiled on OSX using [homebrew](http://brew.sh/). If you're on Linux and it doesn't work for you, please replace the executable in `lib/tidy`.
 
 You need a **Java Runtime Environment** to run CSS validation. This should normally already be available on OSX and Linux machines, too. A local copy ([`css-validator.jar`](http://jigsaw.w3.org/css-validator/DOWNLOAD.html)) of the [W3 CSS Validation Service](http://jigsaw.w3.org/css-validator/) is used.
 
@@ -67,6 +67,7 @@ You need a **Java Runtime Environment** to run CSS validation. This should norma
 - Cache HTML validations: use MD5 to prevent validating the same source again and again! (Maybe even keep the cache between running specs!)
 - Add option to CssHunter that ignores "bare" rules like applet, blockquote, etc. (which usually stem from libraries like Compass reset or Normalize)
 - Add option to make Headhunter automatically remove unused CSS selectors from compiled file
+- Test on Linux! Add switch to use linux-compiled version of tidy if needed.
 
 ## Disclaimer
 
