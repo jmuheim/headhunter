@@ -53,21 +53,21 @@ You need a **Java Runtime Environment** to run CSS validation. This should norma
 
 ## Known issues and future plans
 
+- **Test on Linux! Add switch to use linux-compiled version of tidy if needed.**
 - It would be nice to use Rails' own assets compilation that's executed when the first JavaScript test is run. Anyone has an idea on how to do this?
 - HTML and CSS sources should not be uglified, to allow more concise error messages
 - Would be really useful to have the concrete URL of every validated HTML page. But can't find a way to extract it from Rack response.
-- There are not tests yet. I first want to see whether this gem would be appreciated by the community, and if so, I will definitely add tests.
 - Didn't try this with AJAX requests yet. Would be great if such responses would be validated, too!
-- In feature tests, the same views are getting rendered again and again. These same sources shouldn't be validated over and over again!
 - More configuration options needed! CSS1, CSS2, CSS2.1, CSS3! XHTML, HTML5, etc.
 - Better output needed! With context lines, etc.
   - HTML output: info about GET/POST/PUT/DELETE!
-- Look out for multiple used IDs on the same page and raise error!
+- Look out for multiple used IDs on the same page and raise error (tidy doesn't seem to do this?!)!
 - Look out for invalid tags and raise error (tidy doesn't seem to do this?!)!
 - Cache HTML validations: use MD5 to prevent validating the same source again and again! (Maybe even keep the cache between running specs!)
 - Add option to CssHunter that ignores "bare" rules like applet, blockquote, etc. (which usually stem from libraries like Compass reset or Normalize)
+- Add option to specify known invalid/unused tags, attributes and selectors (e.g. `aria-*` or `ng-*`).
+- Add option to ignore vendor prefixed attributes.
 - Add option to make Headhunter automatically remove unused CSS selectors from compiled file
-- Test on Linux! Add switch to use linux-compiled version of tidy if needed.
 
 ## Disclaimer
 
