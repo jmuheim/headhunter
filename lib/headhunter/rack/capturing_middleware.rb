@@ -7,21 +7,22 @@ module Headhunter
       end
 
       def call(env)
+        url = env['PATH_INFO'] || 'unknown'
         response = @app.call(env)
-        process(response)
+        process(url, response)
         response
       end
 
-      def process(rack_response)
+      def process(url, rack_response)
         status, headers, response = rack_response
 
         if html = extract_html_from(response)
-          @hh.process('unknown', html)
+          @hh.process(url, html)
         end
       end
 
       def extract_html_from(response)
-        response[0]
+        response[0] if response.respond_to? :[]
       end
     end
   end

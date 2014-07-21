@@ -21,9 +21,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'colorize'
   s.add_dependency 'nokogiri'
 
+  s.add_development_dependency 'pry'
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'capybara'
-  s.add_development_dependency 'jazz_hands'
 
   s.test_files = Dir['spec/**/*']
 end

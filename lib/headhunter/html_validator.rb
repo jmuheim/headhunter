@@ -3,7 +3,7 @@ require 'colorize'
 
 module Headhunter
   class HtmlValidator
-    VALIDATOR_DIR = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/'
+    VALIDATOR_DIR = File.join Gem.loaded_specs['headhunter'].full_gem_path, '/lib/tidy'
     EXECUTABLE    = 'tidy'
 
     attr_reader :responses
@@ -13,17 +13,26 @@ module Headhunter
     end
 
     def validate(uri, html)
-      Dir.chdir(VALIDATOR_DIR) do
-        raise "Could not find tidy in #{Dir.pwd}" unless File.exists? EXECUTABLE
+      tidy_path = %x[which #{EXECUTABLE}].strip
+      tidy_path = File.join(VALIDATOR_DIR, EXECUTABLE) unless tidy_path.present?
 
-        # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
-        stdin, stdout, stderr = Open3.popen3("#{EXECUTABLE} -quiet")
+      fail "Could not find #{tidy_path}" unless File.exist? tidy_path
+
+      # tidy_version = `#{executable} -v`
+      # puts "Using #{executable}: #{tidy_version}"
+
+      # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
+
+      begin
+        stdin, stdout, stderr = Open3.popen3("#{tidy_path} -quiet")
         stdin.puts html
         stdin.close
         stdout.close
 
         @responses << Response.new(stderr.read, uri)
         stderr.close
+      rescue Encoding::UndefinedConversionError
+        # not HTML, maybe something else (PDF, image, ...)
       end
     end
 

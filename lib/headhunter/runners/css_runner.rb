@@ -1,44 +1,36 @@
-require 'fileutils'
-
 module Headhunter
-  class Runner
+  class CssRunner
     ASSETS_PATH = 'public/assets'
 
-    attr_accessor :results
-
-    def initialize(root)
-      @root             = root
-      @temporary_assets = []
-
+    def initialize
       precompile_assets!
-
-      @html_validator = HtmlValidator.new
       @css_hunter     = CssHunter.new(stylesheets)
-
       @css_validator = CssValidator.new(stylesheets)
     end
 
     def process(url, html)
-      @html_validator.validate(url, html)
       @css_hunter.process(html)
+      # TODO: maybe we should call @css_validator.validate(html) ?
     end
 
-    def clean_up!
+    def results
+      [
+        @css_hunter.statistics,
+        @css_validator.statistics,
+      ]
+    end
+
+    def clean_up
       print "Headhunter is removing precompiled assets...".yellow
       remove_assets!
       puts " done!".yellow
     end
 
-    def report
-      puts [ @html_validator.statistics,
-             @css_validator.statistics,
-             @css_hunter.statistics
-           ].join "\n\n"
-
-     puts
-    end
-
     private
+
+    def stylesheets
+      Dir["#{::Rails.root}/#{ASSETS_PATH}/*.css"]
+    end
 
     def precompile_assets!
       print "Headhunter is removing eventually existing assets...".yellow
@@ -55,10 +47,6 @@ module Headhunter
 
     def remove_assets!
       FileUtils.rm_r ASSETS_PATH if File.exist?(ASSETS_PATH)
-    end
-
-    def stylesheets
-      Dir["#{::Rails.root}/#{ASSETS_PATH}/*.css"]
     end
   end
 end
