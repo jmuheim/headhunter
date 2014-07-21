@@ -29,13 +29,18 @@ module Headhunter
         # puts "Using #{executable}: #{tidy_version}"
 
         # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
-        stdin, stdout, stderr = Open3.popen3("#{executable} -quiet")
-        stdin.puts html
-        stdin.close
-        stdout.close
 
-        @responses << Response.new(stderr.read, uri)
-        stderr.close
+        begin
+          stdin, stdout, stderr = Open3.popen3("#{executable} -quiet")
+          stdin.puts html
+          stdin.close
+          stdout.close
+
+          @responses << Response.new(stderr.read, uri)
+          stderr.close
+        rescue Encoding::UndefinedConversionError
+          # not HTML, maybe something else (PDF, image, ...)
+        end
       end
     end
 
