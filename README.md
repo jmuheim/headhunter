@@ -35,6 +35,13 @@ $ HEADHUNTER=true cucumber
 
 Headhunter doesn't keep your tests from passing if invalid HTML or unused CSS is found. Instead it displays a short statistic after the tests are run.
 
+If you want to disable a single part of validation, start your tests with this environment variables:
+
+```
+$ HEADHUNTER=true HEADHUNTER_CSS=false rspec # only HTML stuff is invoked
+$ HEADHUNTER=true HEADHUNTER_HTML=false rspec # only CSS stuff is invoked
+```
+
 ![Headhunter output](docs/screenshot.png)
 
 ## How it works
