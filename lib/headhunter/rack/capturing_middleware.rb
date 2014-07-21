@@ -21,7 +21,7 @@ module Headhunter
       end
 
       def extract_html_from(response)
-        response[0]
+        response[0] if response.respond_to? :[]
       end
     end
   end
