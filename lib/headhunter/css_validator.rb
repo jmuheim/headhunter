@@ -23,7 +23,7 @@ module Headhunter
 
     def validate(uri)
       Dir.chdir(VALIDATOR_DIR) do
-        raise "Couldn't locate uri #{uri}" unless File.exists? uri
+        fail "Couldn't locate uri #{uri}" unless File.exists? uri
 
         # See http://stackoverflow.com/questions/1137884/is-there-an-open-source-css-validator-that-can-be-run-locally
         # More config options see http://jigsaw.w3.org/css-validator/manual.html
