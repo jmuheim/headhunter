@@ -1,4 +1,4 @@
-if ENV['HEADHUNTER'] == 'true'
+if ENV['HEADHUNTER'] == 'true' || ENV['RAILS_ENV'] == 'test'
   require 'headhunter/engine'
   require 'headhunter/css_hunter'
   require 'headhunter/css_validator'
