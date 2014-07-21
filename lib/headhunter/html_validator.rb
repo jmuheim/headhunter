@@ -13,11 +13,23 @@ module Headhunter
     end
 
     def validate(uri, html)
-      Dir.chdir(VALIDATOR_DIR) do
-        fail "Could not find tidy in #{Dir.pwd}" unless File.exists? EXECUTABLE
+      executable = %x[which #{EXECUTABLE}]
+      if executable.present?
+        path = File.dirname(executable).strip
+        executable = File.basename(executable).strip
+      else
+        path = VALIDATOR_DIR
+        executable = EXECUTABLE
+      end
+
+      Dir.chdir(path) do
+        fail "Could not find #{executable} in #{Dir.pwd}" unless File.exists? executable
+
+        # tidy_version = `#{executable} -v`
+        # puts "Using #{executable}: #{tidy_version}"
 
         # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
-        stdin, stdout, stderr = Open3.popen3("#{EXECUTABLE} -quiet")
+        stdin, stdout, stderr = Open3.popen3("#{executable} -quiet")
         stdin.puts html
         stdin.close
         stdout.close
