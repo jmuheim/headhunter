@@ -3,7 +3,7 @@ require 'colorize'
 
 module Headhunter
   class HtmlValidator
-    VALIDATOR_DIR = Gem.loaded_specs['headhunter'].full_gem_path + '/lib/tidy/'
+    VALIDATOR_DIR = File.join Gem.loaded_specs['headhunter'].full_gem_path, '/lib/tidy'
     EXECUTABLE    = 'tidy'
 
     attr_reader :responses
@@ -13,34 +13,26 @@ module Headhunter
     end
 
     def validate(uri, html)
-      executable = %x[which #{EXECUTABLE}]
-      if executable.present?
-        path = File.dirname(executable).strip
-        executable = File.basename(executable).strip
-      else
-        path = VALIDATOR_DIR
-        executable = EXECUTABLE
-      end
+      tidy_path = %x[which #{EXECUTABLE}].strip
+      tidy_path = File.join(VALIDATOR_DIR, EXECUTABLE) unless tidy_path.present?
 
-      Dir.chdir(path) do
-        fail "Could not find #{executable} in #{Dir.pwd}" unless File.exists? executable
+      fail "Could not find #{tidy_path}" unless File.exist? tidy_path
 
-        # tidy_version = `#{executable} -v`
-        # puts "Using #{executable}: #{tidy_version}"
+      # tidy_version = `#{executable} -v`
+      # puts "Using #{executable}: #{tidy_version}"
 
-        # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
+      # Docs for Tidy: http://tidy.sourceforge.net/docs/quickref.html
 
-        begin
-          stdin, stdout, stderr = Open3.popen3("#{executable} -quiet")
-          stdin.puts html
-          stdin.close
-          stdout.close
+      begin
+        stdin, stdout, stderr = Open3.popen3("#{tidy_path} -quiet")
+        stdin.puts html
+        stdin.close
+        stdout.close
 
-          @responses << Response.new(stderr.read, uri)
-          stderr.close
-        rescue Encoding::UndefinedConversionError
-          # not HTML, maybe something else (PDF, image, ...)
-        end
+        @responses << Response.new(stderr.read, uri)
+        stderr.close
+      rescue Encoding::UndefinedConversionError
+        # not HTML, maybe something else (PDF, image, ...)
       end
     end
 
